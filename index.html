@@ -274,10 +274,11 @@
 
             <!-- Quick Model + Color Switcher on Hero -->
             <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
-              <div class="flex items-center gap-1.5">
+              <div class="flex items-center gap-1.5 flex-wrap">
                 <button type="button" onclick="setHero3DStyle('classic')" data-hero-style="classic" class="hero-style-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-accent text-[#09090D] transition">Classic</button>
                 <button type="button" onclick="setHero3DStyle('winged')" data-hero-style="winged" class="hero-style-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-matte-800 text-zinc-300 border border-matte-border hover:border-accent transition">Winged</button>
                 <button type="button" onclick="setHero3DStyle('bedazzled')" data-hero-style="bedazzled" class="hero-style-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-matte-800 text-zinc-300 border border-matte-border hover:border-accent transition">Bedazzled</button>
+                <button type="button" onclick="setHero3DStyle('heart')" data-hero-style="heart" class="hero-style-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-matte-800 text-zinc-300 border border-matte-border hover:border-accent transition">Heart</button>
               </div>
               <div id="hero-color-dots" class="flex items-center gap-1.5 flex-wrap"></div>
             </div>
@@ -550,7 +551,8 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs text-zinc-400 mb-1">จังหวัด *</label>
-              <input id="co-province" type="text" required placeholder="กรุงเทพมหานคร" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+              <input id="co-province" type="text" required placeholder="กรุงเทพมหานคร" class="w-
+                full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
             </div>
             <div>
               <label class="block text-xs text-zinc-400 mb-1">รหัสไปรษณีย์ *</label>
@@ -765,7 +767,7 @@
                 <div class="lg:col-span-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5 content-start">
                   <div class="sm:col-span-2">
                     <label class="block text-xs text-zinc-400 mb-1">ชื่อรุ่นสินค้า *</label>
-                    <input id="pf-name" type="text" required placeholder="เช่น KNUCK Classic, KNUCK Devil, พวงกุญแจ" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                    <input id="pf-name" type="text" required placeholder="เช่น KNUCK Classic, KNUCK Devil, KNUCK Heart" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
                   </div>
                   <div>
                     <label class="block text-xs text-zinc-400 mb-1">สถานะสินค้า</label>
@@ -802,6 +804,7 @@
                       <option value="classic">Classic (รุ่นมาตรฐาน 4 รู)</option>
                       <option value="winged">Winged / Horn (รุ่นแต่งเขี้ยว)</option>
                       <option value="bedazzled">Bedazzled Era (รุ่นกลิตเตอร์ติดเพชร)</option>
+                      <option value="heart">Heart Edition (รุ่นรูหัวใจ + หัวใจนูน 3 ดวง)</option>
                     </select>
                   </div>
                   <div>
@@ -1195,6 +1198,17 @@
         defaultColor: '#ECECF2',
         badge: 'Y2K LIMITED',
         image: ''
+      },
+      {
+        id: 'knuck-heart',
+        name: 'KNUCK Heart',
+        description: 'เคสไฟแช็ครูใส่นิ้วรูปหัวใจ 4 รู พร้อมหัวใจนูน 3 ดวงบนปลอกหน้า และรูร้อยพวงกุญแจรูปหัวใจ ด้านหลังสลัก KnuckKnuck',
+        basePrice: 179,
+        lighterAddon: 10,
+        style: 'heart',
+        defaultColor: '#1B1B22',
+        badge: 'NEW HEART',
+        image: ''
       }
     ];
 
@@ -1378,12 +1392,10 @@
       const ctx = c.getContext('2d');
       ctx.clearRect(0, 0, c.width, c.height);
 
-      // Fixed recessed "KnuckKnuck" engraving for flat back above keychain hole
       ctx.font = '900 72px "Space Grotesk", "Inter", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Subtle bevel rim highlight + recessed dark groove
       ctx.fillStyle = 'rgba(255,255,255,0.24)';
       ctx.fillText('KnuckKnuck', c.width / 2 + 2, c.height / 2 + 3);
       ctx.fillStyle = 'rgba(0,0,0,0.68)';
@@ -1395,7 +1407,6 @@
       const mapTex = new THREE.CanvasTexture(c);
       mapTex.anisotropy = 4;
 
-      // Bump map for recessed engraving depth
       const b = document.createElement('canvas');
       b.width = 512;
       b.height = 140;
@@ -1422,7 +1433,6 @@
       const clean = (text || '').trim().toUpperCase().slice(0, 12);
       if (!clean) return null;
 
-      // Embossed 3D-printed raised lettering matching case material with crisp bevel lighting
       const col = new THREE.Color(baseHex);
       const lum = 0.299 * col.r + 0.587 * col.g + 0.114 * col.b;
       const topHighlight = lum < 0.5 ? 'rgba(255,255,255,0.88)' : 'rgba(255,255,255,0.92)';
@@ -1434,15 +1444,12 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Extruded side shadow
       ctx.fillStyle = dropShadow;
       ctx.fillText(clean, c.width / 2 + 5, c.height / 2 + 6);
 
-      // Raised body
       ctx.fillStyle = baseHex;
       ctx.fillText(clean, c.width / 2, c.height / 2);
 
-      // Crisp 3D-printed top outline & sheen
       ctx.fillStyle = faceFill;
       ctx.fillText(clean, c.width / 2, c.height / 2);
       ctx.strokeStyle = topHighlight;
@@ -1452,7 +1459,6 @@
       const mapTex = new THREE.CanvasTexture(c);
       mapTex.anisotropy = 4;
 
-      // Raised bump map
       const b = document.createElement('canvas');
       b.width = 768;
       b.height = 180;
@@ -1469,6 +1475,22 @@
       return { mapTex, bumpTex };
     }
 
+    function createHeartPoints(cx, cy, scale, rotRad = 0, segments = 32) {
+      const pts = [];
+      const cosR = Math.cos(rotRad);
+      const sinR = Math.sin(rotRad);
+      for (let i = 0; i <= segments; i++) {
+        const t = (i / segments) * Math.PI * 2;
+        const hx = 16 * Math.pow(Math.sin(t), 3) * 0.032 * scale;
+        const hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * 0.032 * scale;
+        pts.push(new THREE.Vector2(
+          cx + (hx * cosR - hy * sinR),
+          cy + (hx * sinR + hy * cosR)
+        ));
+      }
+      return pts;
+    }
+
     function buildKnuckCaseGroup(options = {}) {
       const {
         caseHex = '#1B1B22',
@@ -1481,6 +1503,7 @@
       const root = new THREE.Group();
       const isBedazzled = style === 'bedazzled';
       const isWinged = style === 'winged';
+      const isHeart = style === 'heart';
 
       const caseMat = new THREE.MeshStandardMaterial({
         color: new THREE.Color(caseHex),
@@ -1498,7 +1521,7 @@
         curveSegments: 32
       };
 
-      // 1. Main Unified Spine + Bottom Keychain Tab (back face flat at z = -0.30, front face at z = +0.30)
+      // 1. Main Unified Spine + Bottom Keychain Tab
       const spineShape = new THREE.Shape();
       spineShape.moveTo(-1.02, -1.35);
       spineShape.lineTo(-1.02, 1.48);
@@ -1510,7 +1533,12 @@
       spineShape.quadraticCurveTo(-1.02, -2.28, -1.02, -1.35);
 
       const keychainHole = new THREE.Path();
-      keychainHole.absarc(-0.42, -1.86, 0.145, 0, Math.PI * 2, true);
+      if (isHeart) {
+        const khPts = createHeartPoints(-0.42, -1.86, 0.34, 0, 24);
+        keychainHole.setFromPoints(khPts.reverse());
+      } else {
+        keychainHole.absarc(-0.42, -1.86, 0.145, 0, Math.PI * 2, true);
+      }
       spineShape.holes.push(keychainHole);
 
       const spineGeo = new THREE.ExtrudeGeometry(spineShape, extrudeSettings);
@@ -1518,7 +1546,7 @@
       const spineMesh = new THREE.Mesh(spineGeo, caseMat);
       root.add(spineMesh);
 
-      // 2. Raised Lighter Sleeve Pocket — Flush with flat back (z = -0.30) and protruding ONLY on front (z = +0.56)
+      // 2. Raised Lighter Sleeve Pocket
       const sleeveShape = new THREE.Shape();
       const sx = -0.96, sy = -1.25, sw = 1.06, sh = 2.86, sr = 0.16;
       sleeveShape.moveTo(sx + sr, sy);
@@ -1542,7 +1570,7 @@
       const sleeveMesh = new THREE.Mesh(sleeveGeo, caseMat);
       root.add(sleeveMesh);
 
-      // 3. Four Ergonomic Curved Finger-Grip Rings (Merged smoothly into spine)
+      // 3. Four Ergonomic Curved Finger-Grip Rings
       const ringSpecs = [
         { x: 0.60, y: 1.24, rOut: 0.56, rIn: 0.36 },
         { x: 0.78, y: 0.36, rOut: 0.57, rIn: 0.37 },
@@ -1552,15 +1580,43 @@
 
       ringSpecs.forEach((rg) => {
         const ringShape = new THREE.Shape();
-        ringShape.absarc(rg.x, rg.y, rg.rOut, 0, Math.PI * 2, false);
-        const hole = new THREE.Path();
-        hole.absarc(rg.x, rg.y, rg.rIn, 0, Math.PI * 2, true);
-        ringShape.holes.push(hole);
+        if (isHeart) {
+          const outPts = createHeartPoints(rg.x + 0.04, rg.y, 1.16, -Math.PI / 2, 32);
+          ringShape.setFromPoints(outPts);
+          const inPts = createHeartPoints(rg.x + 0.04, rg.y, 0.78, -Math.PI / 2, 32);
+          const hole = new THREE.Path();
+          hole.setFromPoints(inPts.reverse());
+          ringShape.holes.push(hole);
+        } else {
+          ringShape.absarc(rg.x, rg.y, rg.rOut, 0, Math.PI * 2, false);
+          const hole = new THREE.Path();
+          hole.absarc(rg.x, rg.y, rg.rIn, 0, Math.PI * 2, true);
+          ringShape.holes.push(hole);
+        }
 
         const ringGeo = new THREE.ExtrudeGeometry(ringShape, extrudeSettings);
         ringGeo.translate(0, 0, -depth / 2);
         root.add(new THREE.Mesh(ringGeo, caseMat));
       });
+
+      // 3.5 Heart Edition: 3 Raised Puffy Hearts on Front Sleeve
+      if (isHeart && (!customName || !customName.trim())) {
+        const heartYPositions = [0.98, 0.16, -0.66];
+        heartYPositions.forEach((hy) => {
+          const hShape = new THREE.Shape();
+          hShape.setFromPoints(createHeartPoints(0, 0, 0.74, 0, 32));
+          const hGeo = new THREE.ExtrudeGeometry(hShape, {
+            depth: 0.08,
+            bevelEnabled: true,
+            bevelThickness: 0.09,
+            bevelSize: 0.07,
+            bevelSegments: 6
+          });
+          const hMesh = new THREE.Mesh(hGeo, caseMat);
+          hMesh.position.set(-0.43, hy, 0.54);
+          root.add(hMesh);
+        });
+      }
 
       // 4. Winged / Horn Edition Hollow Curved Accents
       if (isWinged) {
@@ -1600,7 +1656,6 @@
         const gemColors = ['#FF5CA8', '#38BDF8', '#FACC15', '#A855F7', '#34D399', '#FB7185', '#FFFFFF'];
         const gemGeo = new THREE.OctahedronGeometry(0.075, 1);
 
-        // Gems along the front sleeve face (z = +0.57)
         const sleeveGems = [
           [-0.76, 1.25], [-0.14, 1.10], [-0.74, 0.65], [-0.14, 0.45],
           [-0.76, 0.05], [-0.16, -0.25], [-0.74, -0.62], [-0.16, -0.88],
@@ -1620,7 +1675,6 @@
           root.add(g);
         });
 
-        // Gems around the 4 outer finger rings
         ringSpecs.forEach((rg, rIdx) => {
           for (let a = -1.1; a <= 1.2; a += 0.55) {
             const gx = rg.x + Math.cos(a) * (rg.rOut - 0.08);
@@ -1641,7 +1695,7 @@
         });
       }
 
-      // 6. FIXED Back Engraving: "KnuckKnuck" on flat back directly above the keychain hole (non-editable)
+      // 6. FIXED Back Engraving: "KnuckKnuck"
       const { mapTex, bumpTex } = createEngravedBackTexture(caseHex);
       const backPlateMat = new THREE.MeshStandardMaterial({
         map: mapTex,
@@ -1656,7 +1710,7 @@
       backEngraving.rotation.y = Math.PI;
       root.add(backEngraving);
 
-      // 7. CUSTOMIZABLE Front Raised Embossed Name along the front sleeve block
+      // 7. CUSTOMIZABLE Front Raised Embossed Name
       if (customName && customName.trim()) {
         const nameRes = createCustomNameTexture(customName, caseHex);
         if (nameRes) {
@@ -1675,7 +1729,7 @@
         }
       }
 
-      // 8. Optional 3D Translucent Lighter sticking out the top of the front sleeve
+      // 8. Optional 3D Translucent Lighter
       if (withLighter) {
         const lighterGroup = new THREE.Group();
         const lz = 0.13;
@@ -1761,7 +1815,6 @@
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.container.appendChild(this.renderer.domElement);
 
-        // 3-Point Studio Lighting with subtle Pastel Rim Light
         const amb = new THREE.AmbientLight(0xffffff, 0.65);
         this.scene.add(amb);
 
@@ -1896,7 +1949,7 @@
       }
     }
 
-    // Offscreen Studio Renderer for Product Cards (3/4 studio shot)
+    // Offscreen Studio Renderer for Product Cards
     let cardRenderer = null;
     const cardRenderCache = {};
 
@@ -1969,7 +2022,7 @@
     window.setHero3DView = (side) => heroViewer && heroViewer.setView(side);
     window.setHero3DColor = (hex) => heroViewer && heroViewer.updateOptions({ caseHex: hex });
     window.setHero3DStyle = (style) => {
-      if (heroViewer) heroViewer.updateOptions({ style });
+      if (heroViewer) heroViewer.updateOptions({ style, customName: style === 'heart' ? '' : 'KNUCKKNUCK' });
       document.querySelectorAll('.hero-style-btn').forEach((b) => {
         const active = b.dataset.heroStyle === style;
         b.className = active
@@ -2003,7 +2056,6 @@
       document.getElementById('gallery-ig-link').href = ig;
       document.getElementById('footer-ig-link').href = ig;
 
-      // Favicon & Logo
       const fav = document.getElementById('dynamic-favicon');
       if (fav) fav.href = siteConfig.faviconUrl || siteConfig.logoUrl || DEFAULT_FAVICON_SVG;
 
@@ -2026,7 +2078,6 @@
         heroDefaultStamp.classList.remove('hidden');
       }
 
-      // Hero Text & Banner vs 3D
       const titleLines = (siteConfig.heroTitle || '').split('\n');
       document.getElementById('hero-title').innerHTML = titleLines.length > 1
         ? `${escapeHtml(titleLines[0])}<br /><span class="accent-gradient-text">${escapeHtml(titleLines.slice(1).join(' '))}</span>`
@@ -2045,7 +2096,6 @@
         initHero3D();
       }
 
-      // Payment info in Checkout
       document.getElementById('co-bank-name').textContent = siteConfig.bankName || '';
       document.getElementById('co-account-name').textContent = siteConfig.accountName || '';
       document.getElementById('co-account-number').textContent = siteConfig.accountNumber || '';
@@ -2106,7 +2156,6 @@
                 </div>
                 <p class="text-xs text-zinc-400 mt-2 line-clamp-2">${escapeHtml(p.description || '')}</p>
 
-                <!-- Quick Color Swatches -->
                 <div class="flex items-center gap-1.5 mt-3.5 flex-wrap">
                   ${shades.slice(0, 7).map((s) => `
                     <button type="button" title="${escapeHtml(s.name)}" onclick="switchCardColor('${p.id}', '${s.hex}')"
@@ -2159,7 +2208,7 @@
       if (!list.length) {
         grid.innerHTML = [
           { style: 'classic', hex: '#1B1B22', cap: 'KNUCK Classic — Matte Black' },
-          { style: 'classic', hex: '#F4A6B8', cap: 'KNUCK Classic — Pastel Pink' },
+          { style: 'heart', hex: '#F4A6B8', cap: 'KNUCK Heart — Pastel Pink' },
           { style: 'winged', hex: '#EAD3B3', cap: 'KNUCK Winged — Cream Beige' },
           { style: 'bedazzled', hex: '#ECECF2', cap: 'BEDAZZLED ERA — Y2K Glitter' }
         ].map((item) => {
@@ -3081,7 +3130,6 @@
 
       try {
         if (db) {
-          // If Firestore products collection was empty, preserve default products so they don't vanish
           if (firestoreProductsEmpty) {
             for (const dp of DEFAULT_PRODUCTS) {
               if (dp.id !== editId) {
@@ -3605,7 +3653,6 @@
           });
         });
 
-        // Listen to Owner Meta
         onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'store_meta', 'owner'), (snap) => {
           ownerUid = snap.exists() ? snap.data().ownerUid : null;
           if (!document.getElementById('admin-modal').classList.contains('hidden')) {
@@ -3613,7 +3660,6 @@
           }
         }, (err) => console.warn('Owner listener error:', err));
 
-        // Listen to Site Config
         onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'store_meta', 'config'), (snap) => {
           if (snap.exists()) {
             siteConfig = { ...DEFAULT_SITE_CONFIG, ...snap.data() };
@@ -3621,7 +3667,6 @@
           applySiteConfigToUI();
         }, (err) => console.warn('Config listener error:', err));
 
-        // Listen to Products
         onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), (snap) => {
           firestoreProductsEmpty = snap.empty;
           if (snap.empty) {
@@ -3633,7 +3678,6 @@
           renderAdminProducts();
         }, (err) => console.warn('Products listener error:', err));
 
-        // Listen to Orders
         onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'orders'), (snap) => {
           orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
           renderAdminOrders();
