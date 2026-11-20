@@ -1,0 +1,3465 @@
+<!DOCTYPE html>
+<html lang="th" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KNUCK KNUCK. — GIMME SOME KNUCKs</title>
+
+  <!-- Browser Tab Logo (Favicon) -->
+  <link id="site-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2309090D' stroke='%23F5A9B8' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='37' fill='none' stroke='%23A7C7E7' stroke-width='2' stroke-dasharray='6 4'/%3E%3Cg fill='%23FFFFFF' transform='translate(23,28) scale(0.54)'%3E%3Crect x='6' y='12' width='16' height='30' rx='8'/%3E%3Crect x='25' y='6' width='16' height='36' rx='8'/%3E%3Crect x='44' y='8' width='16' height='34' rx='8'/%3E%3Crect x='63' y='15' width='16' height='27' rx='8'/%3E%3Crect x='6' y='45' width='73' height='26' rx='11'/%3E%3Cpath d='M72 34 C88 34 92 48 86 64 C81 76 68 82 48 82 L26 82 C16 82 14 70 24 68 L58 68 C68 68 72 60 72 52 Z'/%3E%3C/g%3E%3C/svg%3E" />
+
+  <!-- Google Fonts: Inter, Space Grotesk, Prompt (Thai) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Three.js r128 for Interactive 3D Model Viewer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', 'Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'Prompt', 'sans-serif'],
+          },
+          colors: {
+            matte: {
+              950: '#09090D',
+              900: '#12121A',
+              800: '#1B1B26',
+              border: '#272736',
+            },
+            pastel: {
+              pink: '#F5A9B8',
+              blue: '#A7C7E7',
+              mint: '#B5EAD7',
+              peach: '#FFDAC1',
+              lavender: '#C7CEEA',
+              cream: '#F6DEC2',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --accent-hex: #F5A9B8;
+      --accent-2-hex: #A7C7E7;
+      --accent-soft: rgba(245, 169, 184, 0.14);
+      --accent-glow: rgba(245, 169, 184, 0.35);
+    }
+
+    body {
+      background-color: #09090D;
+      color: #F4F4F6;
+      font-family: 'Prompt', 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .text-accent { color: var(--accent-hex) !important; }
+    .bg-accent { background-color: var(--accent-hex) !important; }
+    .border-accent { border-color: var(--accent-hex) !important; }
+    .bg-accent-soft { background-color: var(--accent-soft) !important; }
+
+    .accent-gradient-bg {
+      background: linear-gradient(135deg, var(--accent-hex) 0%, var(--accent-2-hex) 100%);
+    }
+
+    .accent-gradient-text {
+      background: linear-gradient(135deg, var(--accent-hex) 0%, var(--accent-2-hex) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pastel-glow-hover {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .pastel-glow-hover:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-hex);
+      box-shadow: 0 12px 32px -10px var(--accent-glow);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #09090D; }
+    ::-webkit-scrollbar-thumb { background: #2A2A3B; border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-hex); }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up { animation: fadeUp 0.28s ease-out forwards; }
+
+    @keyframes slowSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-slow-spin { animation: slowSpin 26s linear infinite; }
+
+    /* 3D Viewer Canvas Container */
+    .viewer-3d-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      touch-action: none;
+      cursor: grab;
+    }
+    .viewer-3d-wrap canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Subtle dot grid background */
+    .bg-grid-dots {
+      background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-pastel-pink selection:text-matte-950">
+
+  <!-- ==================== ANNOUNCEMENT BAR ==================== -->
+  <div class="w-full accent-gradient-bg text-[#09090D] text-xs sm:text-sm font-bold py-2 px-4 text-center tracking-wide">
+    <span id="ui-announcement">CUSTOM-MADE เคสไฟแช็คมีรูใส่นิ้ว เริ่มต้น 149.- | พร้อมไฟแช็ค 159.- | ใส่ชื่อ Custom +30.-</span>
+  </div>
+
+  <!-- ==================== HEADER / NAVBAR ==================== -->
+  <header class="sticky top-0 z-40 bg-matte-950/85 backdrop-blur-xl border-b border-matte-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group shrink-0">
+        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-matte-900 border border-matte-border flex items-center justify-center relative overflow-hidden group-hover:border-accent transition shadow-lg">
+          <!-- Mini Spinning Stamp Logo SVG with Fist Icon -->
+          <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-11 sm:h-11 animate-slow-spin">
+            <defs>
+              <path id="navCirclePath" d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" />
+            </defs>
+            <text fill="#F4F4F6" font-size="12.5" font-weight="800" letter-spacing="2">
+              <textPath href="#navCirclePath">KNUCK KNUCK • KNUCK KNUCK •</textPath>
+            </text>
+          </svg>
+          <svg viewBox="0 0 100 100" class="w-5 h-5 absolute text-accent">
+            <g fill="currentColor" transform="translate(8,14) scale(0.84)">
+              <rect x="6" y="12" width="16" height="28" rx="8" />
+              <rect x="25" y="6" width="16" height="34" rx="8" />
+              <rect x="44" y="8" width="16" height="32" rx="8" />
+              <rect x="63" y="15" width="16" height="25" rx="8" />
+              <rect x="6" y="47" width="73" height="22" rx="10" />
+              <path d="M72 34 C88 34 92 48 86 64 C81 76 68 82 48 82 L28 82 C18 82 16 71 26 69 L58 69 C68 69 72 60 72 52 Z" />
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div id="ui-store-name" class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white leading-none">KNUCK KNUCK.</div>
+          <div class="text-[10px] sm:text-[11px] text-zinc-400 tracking-[0.18em] uppercase mt-0.5">GIMME SOME KNUCKs</div>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-zinc-300">
+        <a href="#catalog" class="hover:text-accent transition">สินค้าทั้งหมด</a>
+        <a href="#shade-bar" class="hover:text-accent transition">Pick Your Shade</a>
+        <a href="#how-to-order" class="hover:text-accent transition">วิธีสั่งทำ</a>
+        <button type="button" onclick="openTrackOrderModal()" class="inline-flex items-center gap-1.5 text-zinc-200 hover:text-accent transition font-semibold">
+          <i class="fa-solid fa-magnifying-glass-location text-accent"></i>
+          <span>ติดตามออเดอร์</span>
+        </button>
+        <a id="ui-ig-nav" href="https://www.instagram.com/knuckknuck_/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-zinc-300 hover:text-pastel-pink transition">
+          <i class="fa-brands fa-instagram text-base"></i>
+          <span>@knuckknuck_</span>
+        </a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button type="button" onclick="openTrackOrderModal()" aria-label="ติดตามออเดอร์" title="ติดตามออเดอร์" class="md:hidden w-10 h-10 rounded-xl bg-matte-900 border border-matte-border flex items-center justify-center text-accent hover:border-accent transition">
+          <i class="fa-solid fa-truck-fast text-sm"></i>
+        </button>
+
+        <a id="ui-ig-mobile" href="https://www.instagram.com/knuckknuck_/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="md:hidden w-10 h-10 rounded-xl bg-matte-900 border border-matte-border flex items-center justify-center text-zinc-200 hover:text-pastel-pink transition">
+          <i class="fa-brands fa-instagram text-lg"></i>
+        </a>
+
+        <button id="btn-open-cart" type="button" onclick="openCart()" class="relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-white text-[#09090D] font-bold text-sm hover:bg-accent transition shadow-md">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="hidden sm:inline">ตะกร้า</span>
+          <span id="cart-badge" class="min-w-[20px] h-5 px-1.5 rounded-full bg-[#09090D] text-white text-[11px] font-extrabold flex items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="flex-1">
+
+    <!-- ==================== HERO SECTION (BLACK & PASTEL + 3D PREVIEW) ==================== -->
+    <section class="relative overflow-hidden border-b border-matte-border bg-grid-dots">
+      <!-- Ambient Pastel Glow Blobs -->
+      <div class="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-20 blur-3xl bg-accent"></div>
+      <div class="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full opacity-15 blur-3xl bg-pastel-blue"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+
+          <!-- Left Copy -->
+          <div class="lg:col-span-6 space-y-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent-soft border border-accent/40 text-accent text-xs font-bold tracking-wider uppercase">
+              <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+              <span id="ui-hero-badge">CUSTOM-MADE FINGER-GRIP LIGHTER CASE • STARTS AT 149 THB</span>
+            </div>
+
+            <h1 id="ui-hero-title" class="font-display font-extrabold text-4xl sm:text-5xl lg:text-[3.4rem] leading-[1.08] tracking-tight text-white">
+              KNUCK KNUCK. <br />
+              <span class="accent-gradient-text">GIMME SOME KNUCKs</span>
+            </h1>
+
+            <p id="ui-hero-subtitle" class="text-zinc-300 text-sm sm:text-base leading-relaxed max-w-xl">
+              เคสไฟแช็คมีรูใส่นิ้ว (Finger-Grip Lighter Case) งาน Custom-Made สุดเท่ เลือกเฉดสีพาสเทลและสีด้านได้จุใจ 10 เฉดสี พร้อมรูห้อยพวงกุญแจ เลือกสีไฟแช็คได้ 5 สี และใส่ชื่อ Custom ของคุณเอง เริ่มต้นเพียง 149 บาท
+            </p>
+
+            <!-- Feature Pills -->
+            <div class="flex flex-wrap gap-2.5 text-xs font-semibold">
+              <span class="px-3 py-1.5 rounded-xl bg-matte-900 border border-matte-border text-zinc-200"><i class="fa-solid fa-cube text-accent mr-1.5"></i>หมุนดูงาน 3D ได้รอบตัว</span>
+              <span class="px-3 py-1.5 rounded-xl bg-matte-900 border border-matte-border text-zinc-200"><i class="fa-solid fa-wand-magic-sparkles text-pastel-mint mr-1.5"></i>สลัก KnuckKnuck ด้านหลัง</span>
+              <span class="px-3 py-1.5 rounded-xl bg-matte-900 border border-matte-border text-zinc-200"><i class="fa-solid fa-pen-nib text-pastel-blue mr-1.5"></i>ใส่ชื่อ Custom +<span class="ui-custom-fee-inline">30</span>.-</span>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <a href="#catalog" class="px-7 py-3.5 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-sm sm:text-base hover:opacity-95 transition shadow-lg inline-flex items-center gap-2">
+                <span>เลือกแบบ &amp; สั่งทำเลย</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+              <button type="button" onclick="openTrackOrderModal()" class="px-5 py-3.5 rounded-2xl bg-matte-900 border border-matte-border text-white font-bold text-sm hover:border-accent hover:text-accent transition inline-flex items-center gap-2">
+                <i class="fa-solid fa-truck-fast text-accent"></i>
+                <span>ติดตามสถานะออเดอร์</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Interactive 3D Stage (or Custom Hero Banner Image if uploaded) -->
+          <div class="lg:col-span-6 relative">
+            <!-- Floating Spinning Brand Stamp Logo Badge -->
+            <div class="pointer-events-none hidden sm:flex items-center justify-center w-28 h-28 lg:w-32 lg:h-32 rounded-full bg-matte-950/90 backdrop-blur-md border border-accent/40 shadow-2xl absolute -top-7 -right-5 z-20">
+              <svg viewBox="0 0 200 200" class="w-full h-full p-1.5 animate-slow-spin">
+                <defs>
+                  <path id="heroStampOuter" d="M 100,100 m -76,0 a 76,76 0 1,1 152,0 a 76,76 0 1,1 -152,0" />
+                  <path id="heroStampInner" d="M 100,100 m -50,0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0" />
+                </defs>
+                <text fill="#FFFFFF" font-family="Space Grotesk, sans-serif" font-size="22" font-weight="800" letter-spacing="4">
+                  <textPath href="#heroStampOuter">KNUCK KNUCK. KNUCK KNUCK. </textPath>
+                </text>
+                <text fill="var(--accent-hex)" font-family="Space Grotesk, sans-serif" font-size="13.5" font-weight="700" letter-spacing="3">
+                  <textPath href="#heroStampInner">GIMME SOME KNUCKs • GIMME SOME KNUCKs • </textPath>
+                </text>
+              </svg>
+              <!-- Center Fist Silhouette -->
+              <svg viewBox="0 0 100 100" class="w-11 h-11 absolute text-white drop-shadow">
+                <g fill="currentColor" transform="translate(8,14) scale(0.84)">
+                  <rect x="6" y="12" width="16" height="28" rx="8" />
+                  <rect x="25" y="6" width="16" height="34" rx="8" />
+                  <rect x="44" y="8" width="16" height="32" rx="8" />
+                  <rect x="63" y="15" width="16" height="25" rx="8" />
+                  <rect x="6" y="47" width="73" height="22" rx="10" />
+                  <path d="M72 34 C88 34 92 48 86 64 C81 76 68 82 48 82 L28 82 C18 82 16 71 26 69 L58 69 C68 69 72 60 72 52 Z" />
+                </g>
+              </svg>
+            </div>
+
+            <div class="relative rounded-3xl bg-matte-900/90 border border-matte-border p-4 sm:p-5 shadow-2xl overflow-hidden">
+              <!-- Custom Hero Image Container (shown only if owner uploads a hero image) -->
+              <div id="hero-custom-img-wrap" class="hidden rounded-2xl overflow-hidden aspect-[4/3] bg-matte-950">
+                <img id="ui-hero-custom-img" src="" alt="KNUCK KNUCK. Hero" class="w-full h-full object-cover" />
+              </div>
+
+              <!-- Interactive 3D Viewer Container -->
+              <div id="hero-3d-section" class="space-y-3">
+                <div class="flex items-center justify-between gap-2 text-xs">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-matte-950 border border-matte-border text-zinc-300 font-semibold">
+                    <i class="fa-solid fa-arrows-rotate text-accent"></i> ลากเพื่อหมุนดู 360°
+                  </span>
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="heroSetCameraView('front')" class="px-2.5 py-1 rounded-lg bg-matte-950 border border-matte-border text-[11px] font-bold text-zinc-200 hover:border-accent hover:text-accent transition">ด้านหน้า</button>
+                    <button type="button" onclick="heroSetCameraView('back')" class="px-2.5 py-1 rounded-lg bg-accent-soft border border-accent/50 text-[11px] font-bold text-accent hover:bg-accent hover:text-[#09090D] transition">ด้านหลัง (สลัก KnuckKnuck)</button>
+                  </div>
+                </div>
+
+                <!-- 3D Canvas Box -->
+                <div id="hero-3d-container" class="viewer-3d-wrap relative w-full h-[310px] sm:h-[360px] rounded-2xl bg-gradient-to-b from-[#171724] to-[#0B0B11] border border-matte-border/80 overflow-hidden">
+                  <!-- Subtle Watermark -->
+                  <div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.04] select-none">
+                    <span class="font-display font-extrabold text-6xl sm:text-7xl tracking-tighter text-white">KNUCK</span>
+                  </div>
+                  <!-- Bottom Style Quick Switcher inside 3D stage -->
+                  <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
+                    <div class="pointer-events-auto flex items-center gap-1.5 bg-matte-950/85 backdrop-blur-md p-1 rounded-xl border border-matte-border">
+                      <button type="button" onclick="heroSetStyle('classic')" id="hero-style-classic" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-accent text-[#09090D] transition">Classic</button>
+                      <button type="button" onclick="heroSetStyle('winged')" id="hero-style-winged" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-zinc-300 hover:text-white transition">Winged</button>
+                      <button type="button" onclick="heroSetStyle('bedazzled')" id="hero-style-bedazzled" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-zinc-300 hover:text-white transition">Bedazzled</button>
+                    </div>
+                    <span id="hero-shade-label" class="px-2.5 py-1 rounded-xl bg-matte-950/85 backdrop-blur-md border border-matte-border text-[11px] font-bold text-zinc-200">Pastel Pink</span>
+                  </div>
+                </div>
+
+                <!-- Quick Shade Swatches under Hero 3D -->
+                <div class="flex items-center justify-between gap-3 pt-1">
+                  <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider shrink-0">ลองเปลี่ยนสี:</span>
+                  <div id="hero-shade-swatches" class="flex items-center gap-2 overflow-x-auto py-1"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PICK YOUR SHADE BAR ==================== -->
+    <section id="shade-bar" class="border-b border-matte-border bg-matte-900/50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="text-[11px] font-mono font-bold uppercase tracking-[0.22em] text-accent">10 SIGNATURE SHADES</span>
+            <h2 class="font-display font-extrabold text-xl sm:text-2xl text-white">PICK YOUR SHADE — เลือกเฉดสีที่ใช่สำหรับคุณ</h2>
+          </div>
+          <div id="shade-palette-pills" class="flex flex-wrap items-center gap-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PRODUCT CATALOG ==================== -->
+    <section id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+        <div>
+          <span class="font-mono text-xs font-bold uppercase tracking-[0.22em] text-accent">CUSTOM-MADE COLLECTION</span>
+          <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white mt-1">เลือกรุ่นเคสไฟแช็คมีรูใส่นิ้ว</h2>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-400 max-w-md">
+          กดปุ่ม <strong class="text-white">"ปรับแต่ง 3D &amp; สั่งซื้อ"</strong> ที่สินค้าแต่ละรุ่น เพื่อเลือกสีเคส สีไฟแช็ค 5 สี ใส่ชื่อ Custom (+<span class="ui-custom-fee-inline">30</span>.-) และหมุนดูชิ้นงาน 3D รอบตัว
+        </p>
+      </div>
+
+      <!-- Product Grid -->
+      <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+    </section>
+
+    <!-- ==================== CUSTOM GALLERY / LOOKBOOK SECTION (OWNER MANAGED) ==================== -->
+    <section id="lookbook-section" class="hidden border-t border-matte-border bg-matte-950">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
+          <div>
+            <span class="font-mono text-xs font-bold uppercase tracking-[0.22em] text-accent">LOOKBOOK &amp; REVIEWS</span>
+            <h2 id="ui-gallery-title" class="font-display font-extrabold text-2xl sm:text-3xl text-white mt-1">ภาพผลงานจริง &amp; แกลเลอรีร้าน</h2>
+          </div>
+          <span class="text-xs text-zinc-400">คลิกที่รูปภาพเพื่อขยายดูรายละเอียด</span>
+        </div>
+        <div id="ui-gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- ==================== HOW TO ORDER & BRAND DETAILS ==================== -->
+    <section id="how-to-order" class="border-t border-matte-border bg-matte-900/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+        <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
+          <span class="font-mono text-xs font-bold uppercase tracking-[0.22em] text-accent">HOW TO CUSTOMIZE</span>
+          <h2 id="ui-about-title" class="font-display font-extrabold text-2xl sm:text-3xl text-white">สั่งทำ KNUCK KNUCK. ง่ายๆ ใน 3 ขั้นตอน</h2>
+          <p id="ui-about-content" class="text-sm text-zinc-400">
+            ทุกชิ้นเป็นงานสั่งทำ Custom-Made พิถีพิถันทุกขั้นตอน พร้อมสลักโลโก้ KnuckKnuck ด้านหลังและรูร้อยพวงกุญแจ ใช้เวลาผลิตประมาณ 2-4 วันทำการ
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-3xl bg-matte-900 border border-matte-border space-y-3">
+            <div class="w-11 h-11 rounded-2xl accent-gradient-bg text-[#09090D] font-display font-extrabold text-lg flex items-center justify-center">01</div>
+            <h3 class="font-bold text-lg text-white">เลือกรุ่น &amp; สีเคส 3D</h3>
+            <p class="text-sm text-zinc-400">เลือกรุ่น Classic, Winged หรือ Bedazzled พร้อมเฉดสีพาสเทล/สีด้าน 10 สี และหมุนดูโมเดล 3D ได้ทั้งด้านหน้าและด้านหลัง</p>
+          </div>
+          <div class="p-6 rounded-3xl bg-matte-900 border border-matte-border space-y-3">
+            <div class="w-11 h-11 rounded-2xl accent-gradient-bg text-[#09090D] font-display font-extrabold text-lg flex items-center justify-center">02</div>
+            <h3 class="font-bold text-lg text-white">เลือกไฟแช็ค &amp; ชื่อ Custom</h3>
+            <p class="text-sm text-zinc-400">รับเฉพาะเคสเริ่มต้น 149.- หรือรับพร้อมไฟแช็ค (+10.-) เลือกได้ 5 สี (แดง ส้ม ฟ้า เขียว ม่วง) และเพิ่มชื่อนูน Custom (+<span class="ui-custom-fee-inline">30</span>.-)</p>
+          </div>
+          <div class="p-6 rounded-3xl bg-matte-900 border border-matte-border space-y-3">
+            <div class="w-11 h-11 rounded-2xl accent-gradient-bg text-[#09090D] font-display font-extrabold text-lg flex items-center justify-center">03</div>
+            <h3 class="font-bold text-lg text-white">ชำระเงิน &amp; ติดตามออเดอร์</h3>
+            <p class="text-sm text-zinc-400">กรอกที่อยู่จัดส่ง โอนชำระเงินพร้อมแนบสลิป รับรหัสออเดอร์ทันที และใช้เช็กสถานะผลิตและเลขพัสดุได้ตลอด 24 ชม.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="border-t border-matte-border bg-matte-950 py-10 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+      <div class="text-center sm:text-left">
+        <div class="font-display font-extrabold text-lg text-white">KNUCK KNUCK.</div>
+        <p class="text-xs text-zinc-500 mt-0.5">Custom-Made Finger-Grip Lighter Case • GIMME SOME KNUCKs</p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <button type="button" onclick="openTrackOrderModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-matte-900 border border-matte-border text-xs sm:text-sm text-zinc-200 hover:text-accent hover:border-accent/50 transition">
+          <i class="fa-solid fa-truck-fast text-accent"></i>
+          <span>ติดตามสถานะออเดอร์</span>
+        </button>
+
+        <a id="ui-ig-footer" href="https://www.instagram.com/knuckknuck_/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-matte-900 border border-matte-border text-xs sm:text-sm text-zinc-300 hover:text-pastel-pink hover:border-pastel-pink/50 transition">
+          <i class="fa-brands fa-instagram"></i>
+          <span>@knuckknuck_</span>
+        </a>
+
+        <button type="button" onclick="openAdminModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-matte-900 border border-matte-border text-xs sm:text-sm text-zinc-400 hover:text-white hover:border-zinc-500 transition">
+          <i class="fa-solid fa-lock text-xs"></i>
+          <span>สำหรับเจ้าของร้าน</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== PRODUCT CUSTOMIZER MODAL (WITH 3D VIEWER) ==================== -->
+  <div id="customizer-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md">
+    <div class="bg-matte-900 border border-matte-border rounded-3xl w-full max-w-5xl max-h-[94vh] flex flex-col shadow-2xl animate-fade-up overflow-hidden">
+      <!-- Header -->
+      <div class="px-5 py-4 border-b border-matte-border bg-matte-950 flex items-center justify-between gap-3">
+        <div>
+          <span class="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-accent">3D CUSTOMIZER</span>
+          <h3 id="cust-prod-title" class="font-display font-bold text-lg sm:text-xl text-white">ปรับแต่งสินค้า</h3>
+        </div>
+        <button type="button" onclick="closeCustomizer()" class="w-9 h-9 rounded-xl bg-matte-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="flex-1 overflow-y-auto p-5 sm:p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          <!-- Left: Interactive 3D Preview -->
+          <div class="lg:col-span-6 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-semibold text-zinc-400"><i class="fa-solid fa-hand-pointer text-accent mr-1"></i>ลากเพื่อหมุนชิ้นงาน 360°</span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="custSetCameraView('front')" class="px-3 py-1.5 rounded-xl bg-matte-950 border border-matte-border text-xs font-bold text-zinc-200 hover:border-accent hover:text-accent transition">
+                  ด้านหน้า (ชื่อ Custom)
+                </button>
+                <button type="button" onclick="custSetCameraView('back')" class="px-3 py-1.5 rounded-xl bg-accent-soft border border-accent/50 text-xs font-bold text-accent hover:bg-accent hover:text-[#09090D] transition">
+                  ด้านหลัง (สลัก KnuckKnuck)
+                </button>
+              </div>
+            </div>
+
+            <div id="cust-3d-container" class="viewer-3d-wrap relative w-full h-[300px] sm:h-[380px] rounded-2xl bg-gradient-to-b from-[#171724] to-[#0B0B11] border border-matte-border overflow-hidden">
+              <!-- Zoom Controls -->
+              <div class="absolute bottom-3 right-3 flex flex-col gap-1.5 z-10">
+                <button type="button" onclick="custZoom(-0.8)" title="ซูมเข้า" class="w-8 h-8 rounded-lg bg-matte-950/90 border border-matte-border text-zinc-200 hover:text-accent flex items-center justify-center text-xs"><i class="fa-solid fa-plus"></i></button>
+                <button type="button" onclick="custZoom(0.8)" title="ซูมออก" class="w-8 h-8 rounded-lg bg-matte-950/90 border border-matte-border text-zinc-200 hover:text-accent flex items-center justify-center text-xs"><i class="fa-solid fa-minus"></i></button>
+              </div>
+            </div>
+
+            <p id="cust-prod-desc" class="text-xs text-zinc-400 leading-relaxed"></p>
+          </div>
+
+          <!-- Right: Customization Controls -->
+          <div class="lg:col-span-6 space-y-5">
+            <!-- 1. Case Shade -->
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <label class="text-sm font-bold text-white">1. เลือกสีเคส (Pick Your Shade)</label>
+                <span id="cust-selected-color-name" class="text-xs font-bold text-accent">-</span>
+              </div>
+              <div id="cust-color-options" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- 2. Lighter Option -->
+            <div class="space-y-2.5">
+              <label class="text-sm font-bold text-white">2. ตัวเลือกไฟแช็ค</label>
+              <div class="grid grid-cols-2 gap-3">
+                <button type="button" id="opt-case-only" onclick="selectLighterOption(false)" class="p-3.5 rounded-2xl border text-left transition">
+                  <div class="text-xs text-zinc-400">เฉพาะเคส</div>
+                  <div id="opt-price-case" class="font-display font-extrabold text-lg text-white">฿149</div>
+                </button>
+                <button type="button" id="opt-with-lighter" onclick="selectLighterOption(true)" class="p-3.5 rounded-2xl border text-left transition">
+                  <div class="text-xs text-zinc-400">เคส + ไฟแช็ค</div>
+                  <div id="opt-price-lighter" class="font-display font-extrabold text-lg text-white">฿159</div>
+                </button>
+              </div>
+
+              <!-- 5 Lighter Colors -->
+              <div id="lighter-color-picker" class="hidden pt-2 space-y-2">
+                <div class="text-xs font-semibold text-zinc-300">เลือกสีไฟแช็ค (5 สี): <span id="cust-lighter-color-label" class="text-accent font-bold">แดง</span></div>
+                <div id="cust-lighter-swatches" class="flex flex-wrap gap-2"></div>
+              </div>
+            </div>
+
+            <!-- 3. Custom Name (+30 THB) -->
+            <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border space-y-3">
+              <label class="flex items-center justify-between cursor-pointer gap-3">
+                <div>
+                  <div class="text-sm font-bold text-white">3. เพิ่มชื่อ Custom บนเคส</div>
+                  <div class="text-xs text-zinc-400">สลัก/นูนชื่อภาษาอังกฤษหรือตัวเลขเก๋ๆ (+<span class="ui-custom-fee-inline">30</span> บาท)</div>
+                </div>
+                <input id="cust-name-toggle" type="checkbox" onchange="toggleCustomNameInput()" class="w-5 h-5 accent-[#F5A9B8] rounded cursor-pointer" />
+              </label>
+
+              <div id="cust-name-input-wrap" class="hidden space-y-1.5">
+                <input id="cust-name-text" type="text" maxlength="10" oninput="onCustomNameInput()" placeholder="พิมพ์ชื่อที่ต้องการ (สูงสุด 10 ตัวอักษร เช่น DD, KNUCK)" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white uppercase tracking-wider focus:border-accent focus:outline-none" />
+                <p class="text-[11px] text-zinc-500">*ชื่อจะแสดงตัวอย่างบนโมเดล 3D ด้านหน้าทันที</p>
+              </div>
+            </div>
+
+            <!-- Quantity & Total -->
+            <div class="flex items-center justify-between gap-4 pt-2 border-t border-matte-border">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-zinc-400 font-semibold">จำนวน:</span>
+                <div class="inline-flex items-center rounded-xl bg-matte-950 border border-matte-border">
+                  <button type="button" onclick="changeCustQty(-1)" class="w-9 h-9 text-zinc-300 hover:text-white font-bold">-</button>
+                  <span id="cust-qty-val" class="w-9 text-center font-bold text-white text-sm">1</span>
+                  <button type="button" onclick="changeCustQty(1)" class="w-9 h-9 text-zinc-300 hover:text-white font-bold">+</button>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-zinc-400">ราคารวม</div>
+                <div id="cust-total-price" class="font-display font-extrabold text-2xl text-accent">฿149</div>
+              </div>
+            </div>
+
+            <button type="button" onclick="addCustomizedToCart()" class="w-full py-3.5 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-base hover:opacity-95 transition shadow-lg flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cart-plus"></i>
+              <span>เพิ่มลงตะกร้าสินค้า</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CART DRAWER ==================== -->
+  <div id="cart-drawer" class="fixed inset-0 z-50 hidden">
+    <div onclick="closeCart()" class="absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-matte-900 border-l border-matte-border flex flex-col shadow-2xl">
+      <div class="px-5 py-4 border-b border-matte-border bg-matte-950 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-bag-shopping text-accent text-lg"></i>
+          <h3 class="font-display font-bold text-lg text-white">ตะกร้าสินค้า</h3>
+        </div>
+        <button type="button" onclick="closeCart()" class="w-9 h-9 rounded-xl bg-matte-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="cart-items-container" class="flex-1 overflow-y-auto p-5 space-y-3.5"></div>
+
+      <div class="p-5 border-t border-matte-border bg-matte-950 space-y-3">
+        <div class="flex justify-between text-sm text-zinc-400">
+          <span>ยอดค่าสินค้า</span>
+          <span id="cart-subtotal" class="text-white font-bold">฿0</span>
+        </div>
+        <div class="flex justify-between text-sm text-zinc-400">
+          <span>ค่าจัดส่ง</span>
+          <span id="cart-shipping" class="text-white font-bold">฿0</span>
+        </div>
+        <div class="flex justify-between text-base font-extrabold pt-2 border-t border-matte-border">
+          <span class="text-white">ยอดสุทธิ</span>
+          <span id="cart-total" class="text-accent font-display text-xl">฿0</span>
+        </div>
+        <button id="btn-go-checkout" type="button" onclick="openCheckout()" class="w-full py-3.5 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-sm sm:text-base hover:opacity-95 transition disabled:opacity-40">
+          ดำเนินการชำระเงิน &amp; กรอกที่อยู่จัดส่ง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CHECKOUT & PAYMENT MODAL ==================== -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md">
+    <div class="bg-matte-900 border border-matte-border rounded-3xl w-full max-w-3xl max-h-[94vh] flex flex-col shadow-2xl animate-fade-up overflow-hidden">
+      <div class="px-5 py-4 border-b border-matte-border bg-matte-950 flex items-center justify-between">
+        <div>
+          <span class="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-accent">CHECKOUT &amp; PAYMENT</span>
+          <h3 class="font-display font-bold text-lg sm:text-xl text-white">ที่อยู่จัดส่ง &amp; ชำระเงิน</h3>
+        </div>
+        <button type="button" onclick="closeCheckout()" class="w-9 h-9 rounded-xl bg-matte-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Checkout Form View -->
+      <form id="checkout-form" onsubmit="submitOrder(event)" class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+        <!-- Shipping Address -->
+        <div class="space-y-3.5">
+          <h4 class="font-bold text-base text-accent flex items-center gap-2">
+            <i class="fa-solid fa-location-dot"></i> ข้อมูลผู้รับ &amp; ที่อยู่จัดส่ง
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label class="block text-xs text-zinc-400 mb-1">ชื่อ-นามสกุล ผู้รับ *</label>
+              <input id="co-name" type="text" required placeholder="เช่น สมชาย ใจดี" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs text-zinc-400 mb-1">เบอร์โทรศัพท์ *</label>
+              <input id="co-phone" type="tel" required placeholder="08X-XXX-XXXX" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs text-zinc-400 mb-1">ชื่อ IG หรือ Line ID (สำหรับติดต่อกลับ)</label>
+              <input id="co-social" type="text" placeholder="@instagram หรือ Line ID" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs text-zinc-400 mb-1">บ้านเลขที่ / หมู่บ้าน / ซอย / ถนน *</label>
+              <input id="co-address" type="text" required placeholder="เช่น 123/45 หมู่บ้าน... ซอย..." class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs text-zinc-400 mb-1">แขวง / ตำบล *</label>
+              <input id="co-subdistrict" type="text" required class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs text-zinc-400 mb-1">เขต / อำเภอ *</label>
+              <input id="co-district" type="text" required class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs text-zinc-400 mb-1">จังหวัด *</label>
+              <input id="co-province" type="text" required class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs text-zinc-400 mb-1">รหัสไปรษณีย์ *</label>
+              <input id="co-zipcode" type="text" required maxlength="5" pattern="[0-9]{5}" placeholder="10110" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs text-zinc-400 mb-1">หมายเหตุถึงร้าน (ถ้ามี)</label>
+              <input id="co-note" type="text" placeholder="เช่น ฝากห่อของขวัญ / ระบุเพิ่มเติม" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-base text-accent flex items-center gap-2">
+              <i class="fa-solid fa-qrcode"></i> ชำระเงินผ่านโอนบัญชี / PromptPay
+            </h4>
+            <span id="co-total-badge" class="font-display font-extrabold text-xl text-white">฿0</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+            <div class="sm:col-span-5 flex justify-center">
+              <img id="co-qr-img" src="https://placehold.co/240x240/FFFFFF/09090D?text=PromptPay+QR" alt="PromptPay QR" class="w-44 h-44 rounded-2xl object-contain bg-white p-2 border border-matte-border" />
+            </div>
+            <div class="sm:col-span-7 space-y-2 text-sm">
+              <div class="p-3 rounded-xl bg-matte-900 border border-matte-border space-y-1">
+                <div class="text-xs text-zinc-400">ธนาคาร / ช่องทาง</div>
+                <div id="co-bank-name" class="font-bold text-white">ธนาคารกสิกรไทย (KBank)</div>
+                <div class="text-xs text-zinc-400 pt-1">เลขที่บัญชี / พร้อมเพย์</div>
+                <div class="flex items-center justify-between gap-2">
+                  <span id="co-bank-acc" class="font-mono font-extrabold text-base text-accent">012-3-45678-9</span>
+                  <button type="button" onclick="copyBankAccount()" class="px-2.5 py-1 rounded-lg bg-matte-800 border border-matte-border text-xs font-bold text-zinc-200 hover:border-accent hover:text-accent transition">
+                    <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                  </button>
+                </div>
+                <div class="text-xs text-zinc-400 pt-1">ชื่อบัญชี: <span id="co-bank-holder" class="text-zinc-200 font-semibold">KNUCK KNUCK STUDIO</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slip Upload -->
+          <div class="space-y-2 pt-2 border-t border-matte-border">
+            <label class="block text-xs font-bold text-white">แนบสลิปการโอนเงิน *</label>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <label class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border hover:border-accent text-xs font-bold text-white cursor-pointer inline-flex items-center gap-2 transition">
+                <i class="fa-solid fa-cloud-arrow-up text-accent"></i>
+                <span>เลือกรูปสลิปโอนเงิน</span>
+                <input id="co-slip-file" type="file" accept="image/*" onchange="handleSlipUpload(event)" class="hidden" />
+              </label>
+              <span id="co-slip-status" class="text-xs text-zinc-400">ยังไม่ได้เลือกไฟล์สลิป</span>
+            </div>
+            <img id="co-slip-preview" src="" alt="ตัวอย่างสลิป" class="hidden h-36 rounded-xl border border-matte-border object-contain bg-matte-900 p-1" />
+          </div>
+        </div>
+
+        <button id="btn-submit-order" type="submit" class="w-full py-4 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-base hover:opacity-95 transition shadow-lg">
+          ยืนยันคำสั่งซื้อ &amp; แจ้งชำระเงิน
+        </button>
+      </form>
+
+      <!-- Order Success View -->
+      <div id="checkout-success-view" class="hidden p-6 sm:p-10 text-center space-y-5 overflow-y-auto">
+        <div class="w-16 h-16 rounded-full bg-pastel-mint/20 border border-pastel-mint text-pastel-mint mx-auto flex items-center justify-center text-3xl">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="space-y-1">
+          <h4 class="font-display font-extrabold text-2xl text-white">สั่งซื้อสำเร็จแล้ว!</h4>
+          <p class="text-sm text-zinc-400">ขอบคุณที่สั่งทำกับ KNUCK KNUCK. ร้านได้รับสลิปและกำลังตรวจสอบครับ</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border max-w-md mx-auto space-y-1">
+          <div class="text-xs text-zinc-400">รหัสคำสั่งซื้อของคุณ (ใช้สำหรับติดตามสถานะ)</div>
+          <div id="success-order-code" class="font-mono font-extrabold text-2xl text-accent tracking-wider">KK-000000</div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
+          <button type="button" onclick="copyLastOrderSummary()" class="px-5 py-3 rounded-2xl bg-matte-800 border border-matte-border text-white font-bold text-sm hover:border-accent hover:text-accent transition">
+            <i class="fa-regular fa-copy mr-1.5"></i>คัดลอกสรุปออเดอร์
+          </button>
+          <button type="button" onclick="openTrackFromSuccess()" class="px-5 py-3 rounded-2xl bg-matte-800 border border-matte-border text-accent font-bold text-sm hover:border-accent transition">
+            <i class="fa-solid fa-truck-fast mr-1.5"></i>ติดตามออเดอร์นี้
+          </button>
+          <button type="button" onclick="closeCheckout()" class="px-7 py-3 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-sm hover:opacity-90 transition">
+            กลับสู่หน้าร้าน
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CUSTOMER ORDER TRACKING MODAL ==================== -->
+  <div id="track-order-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md">
+    <div class="bg-matte-900 border border-matte-border rounded-3xl w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl animate-fade-up overflow-hidden">
+      <div class="px-5 py-4 border-b border-matte-border bg-matte-950 flex items-center justify-between">
+        <div>
+          <span class="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-accent">ORDER TRACKING</span>
+          <h3 class="font-display font-bold text-lg sm:text-xl text-white">ติดตามสถานะคำสั่งซื้อ</h3>
+        </div>
+        <button type="button" onclick="closeTrackOrderModal()" class="w-9 h-9 rounded-xl bg-matte-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-5">
+        <form onsubmit="searchCustomerOrders(event)" class="flex flex-col sm:flex-row gap-2.5">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+            <input id="track-query-input" type="text" required placeholder="กรอกรหัสออเดอร์ (เช่น KK-123456) หรือเบอร์โทรศัพท์" class="w-full pl-10 pr-4 py-3 rounded-xl bg-matte-950 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+          </div>
+          <button type="submit" class="px-6 py-3 rounded-xl accent-gradient-bg text-[#09090D] font-extrabold text-sm hover:opacity-90 transition shrink-0">
+            ตรวจสอบสถานะ
+          </button>
+        </form>
+
+        <div id="track-results-container" class="space-y-4">
+          <div class="p-8 rounded-2xl bg-matte-950 border border-matte-border text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-matte-900 text-accent mx-auto flex items-center justify-center text-xl">
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+            <p class="text-sm font-semibold text-zinc-200">เช็กสถานะงาน Custom และเลขพัสดุได้ทันที</p>
+            <p class="text-xs text-zinc-500">กรอกรหัสออเดอร์ที่ได้รับหลังสั่งซื้อ (เช่น KK-XXXXXX) หรือเบอร์โทรที่ใช้สั่งซื้อ</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SINGLE-OWNER ADMIN PANEL MODAL ==================== -->
+  <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-2 sm:p-5 bg-black/90 backdrop-blur-md">
+    <div class="bg-matte-900 border border-matte-border rounded-3xl w-full max-w-6xl max-h-[95vh] flex flex-col shadow-2xl animate-fade-up overflow-hidden">
+      <!-- Top Bar -->
+      <div class="px-5 py-4 border-b border-matte-border bg-matte-950 flex items-center justify-between gap-3">
+        <div>
+          <span class="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-accent">SINGLE-OWNER BACKOFFICE</span>
+          <h3 class="font-display font-bold text-lg sm:text-xl text-white">ระบบจัดการร้าน KNUCK KNUCK.</h3>
+          <p id="admin-auth-status" class="text-[11px] text-zinc-400">กำลังตรวจสอบสิทธิ์...</p>
+        </div>
+        <button type="button" onclick="closeAdminModal()" class="w-9 h-9 rounded-xl bg-matte-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Owner Gate View -->
+      <div id="admin-gate-view" class="p-8 sm:p-12 text-center space-y-5 overflow-y-auto">
+        <div class="w-16 h-16 rounded-2xl bg-accent-soft border border-accent/40 text-accent mx-auto flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="max-w-md mx-auto space-y-2">
+          <h4 id="admin-gate-title" class="font-display font-bold text-xl text-white">ยืนยันสิทธิ์เจ้าของร้าน (เข้าได้คนเดียว)</h4>
+          <p id="admin-gate-desc" class="text-sm text-zinc-400">
+            ระบบจะผูกสิทธิ์เจ้าของร้านไว้กับบัญชีของคุณเพียงคนเดียว เพื่อป้องกันไม่ให้ผู้อื่นเข้าแก้ไขสินค้า ดูรายรับ หรือแก้ข้อมูลหน้าเว็บได้
+          </p>
+        </div>
+        <button id="btn-claim-owner" type="button" onclick="claimOwnerAccess()" class="px-7 py-3.5 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-sm hover:opacity-95 transition shadow-lg">
+          ยืนยันเข้าใช้งานในฐานะเจ้าของร้าน
+        </button>
+      </div>
+
+      <!-- Admin Dashboard View -->
+      <div id="admin-dashboard-view" class="hidden flex-1 flex flex-col overflow-hidden">
+        <!-- Tabs -->
+        <div class="px-5 pt-3 border-b border-matte-border bg-matte-950/60 flex items-center gap-2 overflow-x-auto">
+          <button type="button" id="tab-btn-products" onclick="switchAdminTab('products')" class="px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold border-b-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-box-open mr-1.5"></i>จัดการสินค้า
+          </button>
+          <button type="button" id="tab-btn-orders" onclick="switchAdminTab('orders')" class="px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold border-b-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-receipt mr-1.5"></i>จัดการออเดอร์ (<span id="admin-order-count">0</span>)
+          </button>
+          <button type="button" id="tab-btn-revenue" onclick="switchAdminTab('revenue')" class="px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold border-b-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-chart-column mr-1.5"></i>สรุปรายรับ
+          </button>
+          <button type="button" id="tab-btn-site" onclick="switchAdminTab('site')" class="px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold border-b-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-sliders mr-1.5"></i>แก้ไขหน้าเว็บ &amp; รูปภาพ
+          </button>
+        </div>
+
+        <!-- Tab Panels -->
+        <div class="flex-1 overflow-y-auto p-5 sm:p-6">
+
+          <!-- ========== TAB 1: PRODUCTS CRUD ========== -->
+          <div id="admin-tab-products" class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h4 class="font-bold text-lg text-white">รายการสินค้าทั้งหมด</h4>
+                <p class="text-xs text-zinc-400">เพิ่มสินค้าใหม่ อัปโหลดรูปภาพ กำหนดราคา และเลือกสีที่มีให้ลูกค้าเลือก</p>
+              </div>
+              <button type="button" onclick="openProductForm()" class="px-4 py-2.5 rounded-xl accent-gradient-bg text-[#09090D] font-extrabold text-xs sm:text-sm hover:opacity-95 transition">
+                <i class="fa-solid fa-plus mr-1.5"></i>เพิ่มสินค้าใหม่
+              </button>
+            </div>
+
+            <!-- Add/Edit Product Form -->
+            <form id="admin-prod-form" onsubmit="saveProductForm(event)" class="hidden p-5 rounded-2xl bg-matte-950 border border-accent/40 space-y-4">
+              <div class="flex items-center justify-between">
+                <h5 id="pf-form-title" class="font-bold text-base text-accent">เพิ่มสินค้าใหม่</h5>
+                <button type="button" onclick="closeProductForm()" class="text-xs text-zinc-400 hover:text-white">ยกเลิก</button>
+              </div>
+              <input id="pf-id" type="hidden" />
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label class="block text-xs text-zinc-400 mb-1">ชื่อสินค้า *</label>
+                  <input id="pf-name" type="text" required placeholder="เช่น KNUCK Classic" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs text-zinc-400 mb-1">รูปทรง 3D Preview</label>
+                  <select id="pf-style" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none">
+                    <option value="classic">Classic (ทรงคลาสสิก 4 รู)</option>
+                    <option value="winged">Winged / Horn (ทรงแต่งเขี้ยว)</option>
+                    <option value="bedazzled">Bedazzled Era (กลิตเตอร์ติดเพชร)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs text-zinc-400 mb-1">ราคาเฉพาะเคส (บาท) *</label>
+                  <input id="pf-price-base" type="number" required min="1" value="149" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs text-zinc-400 mb-1">ราคาพร้อมไฟแช็ค (บาท) *</label>
+                  <input id="pf-price-lighter" type="number" required min="1" value="159" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs text-zinc-400 mb-1">คำอธิบายสินค้า</label>
+                  <textarea id="pf-desc" rows="2" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none"></textarea>
+                </div>
+                <div class="sm:col-span-2 space-y-2">
+                  <label class="block text-xs text-zinc-400">รูปภาพปกสินค้า (อัปโหลดจากเครื่อง หรือวาง URL — เว้นว่างจะใช้กราฟิกเคสอัตโนมัติ)</label>
+                  <div class="flex flex-col sm:flex-row gap-2">
+                    <input id="pf-image" type="text" placeholder="https://... หรือกดอัปโหลดรูป" class="flex-1 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                    <label class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent cursor-pointer flex items-center justify-center gap-2">
+                      <i class="fa-solid fa-upload text-accent"></i><span>อัปโหลดรูป</span>
+                      <input type="file" accept="image/*" onchange="handleProdImgUpload(event)" class="hidden" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Colors Editor -->
+              <div class="space-y-2 pt-2 border-t border-matte-border">
+                <label class="block text-xs font-bold text-zinc-300">เฉดสีที่มีให้เลือก</label>
+                <div class="flex flex-wrap items-center gap-2">
+                  <input id="pf-new-color-hex" type="color" value="#F5A9B8" class="w-10 h-10 rounded-lg bg-matte-900 border border-matte-border cursor-pointer" />
+                  <input id="pf-new-color-name" type="text" placeholder="ชื่อสี เช่น Pastel Pink" class="px-3 py-2 rounded-xl bg-matte-900 border border-matte-border text-xs text-white focus:border-accent focus:outline-none" />
+                  <button type="button" onclick="addProdFormColor()" class="px-3.5 py-2 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent">+ เพิ่มสี</button>
+                </div>
+                <div id="pf-colors-list" class="flex flex-wrap gap-2 pt-1"></div>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeProductForm()" class="px-5 py-2.5 rounded-xl bg-matte-800 text-zinc-300 text-xs font-bold">ยกเลิก</button>
+                <button type="submit" class="px-6 py-2.5 rounded-xl accent-gradient-bg text-[#09090D] text-xs font-extrabold">บันทึกสินค้า</button>
+              </div>
+            </form>
+
+            <!-- Product List -->
+            <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </div>
+
+          <!-- ========== TAB 2: ORDERS MANAGEMENT ========== -->
+          <div id="admin-tab-orders" class="hidden space-y-4">
+            <div>
+              <h4 class="font-bold text-lg text-white">คำสั่งซื้อจากลูกค้า</h4>
+              <p class="text-xs text-zinc-400">ตรวจสอบสลิป เปลี่ยนสถานะการผลิต และกรอกเลขพัสดุ (ลูกค้าจะเห็นอัปเดตทันทีในหน้าติดตามออเดอร์)</p>
+            </div>
+            <div id="admin-orders-list" class="space-y-4"></div>
+          </div>
+
+          <!-- ========== TAB 3: MONTHLY REVENUE SUMMARY ========== -->
+          <div id="admin-tab-revenue" class="hidden space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h4 class="font-bold text-lg text-white">สรุปรายรับและยอดขายต่อเดือน</h4>
+                <p class="text-xs text-zinc-400">คำนวณอัตโนมัติจากออเดอร์ทั้งหมด (ไม่รวมออเดอร์ที่ยกเลิก)</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <label for="rev-year-select" class="text-xs text-zinc-400">เลือกปี:</label>
+                <select id="rev-year-select" onchange="renderRevenueDashboard()" class="px-3.5 py-2 rounded-xl bg-matte-950 border border-matte-border text-xs sm:text-sm font-bold text-white focus:border-accent focus:outline-none"></select>
+              </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border space-y-1">
+                <div class="text-xs text-zinc-400 flex items-center justify-between">
+                  <span>รายรับเดือนนี้</span>
+                  <i class="fa-solid fa-coins text-pastel-pink"></i>
+                </div>
+                <div id="rev-kpi-this-month" class="font-display font-extrabold text-2xl text-accent">฿0</div>
+                <div id="rev-kpi-this-month-sub" class="text-[11px] text-zinc-500">0 ออเดอร์</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border space-y-1">
+                <div class="text-xs text-zinc-400 flex items-center justify-between">
+                  <span>รายรับรวมปีที่เลือก</span>
+                  <i class="fa-solid fa-calendar-check text-pastel-blue"></i>
+                </div>
+                <div id="rev-kpi-year-total" class="font-display font-extrabold text-2xl text-white">฿0</div>
+                <div id="rev-kpi-year-orders" class="text-[11px] text-zinc-500">0 ออเดอร์</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border space-y-1">
+                <div class="text-xs text-zinc-400 flex items-center justify-between">
+                  <span>รายรับสะสมทั้งหมด</span>
+                  <i class="fa-solid fa-sack-dollar text-pastel-mint"></i>
+                </div>
+                <div id="rev-kpi-all-time" class="font-display font-extrabold text-2xl text-pastel-mint">฿0</div>
+                <div id="rev-kpi-avg-order" class="text-[11px] text-zinc-500">เฉลี่ย ฿0 / ออเดอร์</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border space-y-1">
+                <div class="text-xs text-zinc-400 flex items-center justify-between">
+                  <span>รอดำเนินการ</span>
+                  <i class="fa-solid fa-clock text-pastel-peach"></i>
+                </div>
+                <div id="rev-kpi-pending" class="font-display font-extrabold text-2xl text-pastel-peach">0</div>
+                <div class="text-[11px] text-zinc-500">รอตรวจสลิป / กำลังผลิต</div>
+              </div>
+            </div>
+
+            <!-- 12-Month Bar Chart -->
+            <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+              <div class="flex items-center justify-between">
+                <h5 class="font-bold text-sm sm:text-base text-white">กราฟรายรับรายเดือน (ม.ค. – ธ.ค.)</h5>
+                <span id="rev-chart-year-badge" class="text-xs font-mono px-2.5 py-1 rounded-lg bg-matte-900 border border-matte-border text-accent">2026</span>
+              </div>
+              <div id="rev-monthly-chart" class="grid grid-cols-12 gap-1.5 sm:gap-2.5 items-end h-52 pt-6"></div>
+            </div>
+
+            <!-- Monthly Breakdown Table -->
+            <div class="rounded-2xl bg-matte-950 border border-matte-border overflow-hidden">
+              <div class="px-5 py-3.5 border-b border-matte-border font-bold text-sm text-white">ตารางสรุปรายรับแยกตามเดือน</div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs sm:text-sm">
+                  <thead class="bg-matte-900/80 text-zinc-400 text-[11px] uppercase">
+                    <tr>
+                      <th class="px-4 py-3">เดือน</th>
+                      <th class="px-4 py-3 text-right">จำนวนออเดอร์</th>
+                      <th class="px-4 py-3 text-right">ยอดค่าสินค้า</th>
+                      <th class="px-4 py-3 text-right">ค่าจัดส่ง</th>
+                      <th class="px-4 py-3 text-right">รายรับสุทธิ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rev-monthly-table" class="divide-y divide-matte-border/60"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========== TAB 4: SITE & GALLERY CMS ========== -->
+          <div id="admin-tab-site" class="hidden">
+            <form onsubmit="saveSiteSettings(event)" class="space-y-6">
+              <!-- Theme & General -->
+              <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+                <h5 class="font-bold text-base text-accent">โทนสีพาสเทล &amp; ข้อมูลหน้าแรก</h5>
+                <div>
+                  <label class="block text-xs text-zinc-400 mb-2">เลือกสีพาสเทลหลักของเว็บไซต์</label>
+                  <input id="sf-accent-key" type="hidden" value="pink" />
+                  <div id="sf-accent-presets" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ชื่อร้าน</label>
+                    <input id="sf-store-name" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ลิงก์ Instagram</label>
+                    <input id="sf-ig-url" type="url" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">ข้อความแถบประกาศด้านบน</label>
+                    <input id="sf-announcement" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">ป้าย Hero Badge</label>
+                    <input id="sf-hero-badge" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">หัวข้อหลัก Hero Title</label>
+                    <input id="sf-hero-title" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">คำอธิบาย Hero Subtitle</label>
+                    <textarea id="sf-hero-subtitle" rows="2" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none"></textarea>
+                  </div>
+                  <div class="sm:col-span-2 space-y-2">
+                    <label class="block text-xs text-zinc-400">รูปภาพ Hero Banner (เว้นว่างเพื่อใช้พรีวิว 3D Interactive)</label>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                      <input id="sf-hero-image" type="text" placeholder="เว้นว่าง = แสดงพรีวิว 3D Interactive" oninput="updateSiteImgPreviews()" class="flex-1 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                      <label class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-upload text-accent"></i><span>อัปโหลดรูป</span>
+                        <input type="file" accept="image/*" onchange="handleSiteImgUpload(event, 'sf-hero-image')" class="hidden" />
+                      </label>
+                      <button type="button" onclick="document.getElementById('sf-hero-image').value='';updateSiteImgPreviews();" class="px-3 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs text-zinc-400 hover:text-white">ล้าง</button>
+                    </div>
+                    <img id="sf-hero-img-preview" src="" alt="ตัวอย่าง Hero" class="hidden h-28 rounded-xl object-cover border border-matte-border" />
+                  </div>
+                  <div class="sm:col-span-2 space-y-2">
+                    <label class="block text-xs text-zinc-400">โลโก้บนแท็บเบราว์เซอร์ (Favicon) — เว้นว่างจะใช้โลโก้กำปั้น KNUCK KNUCK อัตโนมัติ</label>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                      <input id="sf-favicon-url" type="text" placeholder="URL รูปโลโก้ หรือกดอัปโหลดรูป" oninput="updateSiteImgPreviews()" class="flex-1 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                      <label class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-upload text-accent"></i><span>อัปโหลดโลโก้</span>
+                        <input type="file" accept="image/*" onchange="handleSiteImgUpload(event, 'sf-favicon-url')" class="hidden" />
+                      </label>
+                      <button type="button" onclick="document.getElementById('sf-favicon-url').value='';updateSiteImgPreviews();" class="px-3 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs text-zinc-400 hover:text-white">ค่าเริ่มต้น</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gallery / Lookbook Manager -->
+              <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+                <div class="flex items-center justify-between">
+                  <h5 class="font-bold text-base text-accent">แกลเลอรีรูปภาพหน้าเว็บ (Lookbook)</h5>
+                  <span id="sf-gallery-count" class="text-xs font-mono text-zinc-400">0 รูป</span>
+                </div>
+                <div>
+                  <label class="block text-xs text-zinc-400 mb-1">หัวข้อส่วนแกลเลอรี</label>
+                  <input id="sf-gallery-title" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                  <input id="sf-gal-caption" type="text" placeholder="คำบรรยายใต้รูป (ไม่บังคับ)" class="sm:col-span-4 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-xs text-white focus:border-accent focus:outline-none" />
+                  <input id="sf-gal-url" type="text" placeholder="วางลิงก์ URL รูป หรือกดอัปโหลด" class="sm:col-span-4 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-xs text-white focus:border-accent focus:outline-none" />
+                  <button type="button" onclick="addGalleryImageByUrl()" class="sm:col-span-2 px-3 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent">เพิ่มจากลิงก์</button>
+                  <label class="sm:col-span-2 px-3 py-2.5 rounded-xl accent-gradient-bg text-[#09090D] text-xs font-extrabold cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-upload"></i><span>อัปโหลด</span>
+                    <input type="file" accept="image/*" onchange="handleGalleryImgUpload(event)" class="hidden" />
+                  </label>
+                </div>
+                <div id="sf-gallery-list" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+              </div>
+
+              <!-- About, Fees & Payment Details -->
+              <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+                <h5 class="font-bold text-base text-accent">ข้อมูลร้าน ค่าธรรมเนียม &amp; บัญชีรับเงิน</h5>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">หัวข้อวิธีสั่งทำ / เกี่ยวกับร้าน</label>
+                    <input id="sf-about-title" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">รายละเอียดเกี่ยวกับร้าน</label>
+                    <textarea id="sf-about-content" rows="2" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none"></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ค่าเพิ่มชื่อ Custom (บาท)</label>
+                    <input id="sf-custom-fee" type="number" min="0" value="30" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ค่าจัดส่งต่อออเดอร์ (บาท)</label>
+                    <input id="sf-shipping-fee" type="number" min="0" value="40" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ชื่อธนาคาร / ช่องทางโอน</label>
+                    <input id="sf-bank-name" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">เลขที่บัญชี / พร้อมเพย์</label>
+                    <input id="sf-bank-acc" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">ชื่อบัญชีผู้รับเงิน</label>
+                    <input id="sf-bank-holder" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2 space-y-2">
+                    <label class="block text-xs text-zinc-400">รูปภาพ QR Code รับเงิน (PromptPay)</label>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                      <input id="sf-qr-image" type="text" placeholder="URL รูป QR หรือกดอัปโหลด" oninput="updateSiteImgPreviews()" class="flex-1 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                      <label class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-upload text-accent"></i><span>อัปโหลด QR</span>
+                        <input type="file" accept="image/*" onchange="handleSiteImgUpload(event, 'sf-qr-image')" class="hidden" />
+                      </label>
+                    </div>
+                    <img id="sf-qr-img-preview" src="" alt="ตัวอย่าง QR" class="hidden h-28 rounded-xl object-contain bg-white p-1 border border-matte-border" />
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-3.5 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-sm sm:text-base hover:opacity-95 transition shadow-lg">
+                <i class="fa-solid fa-floppy-disk mr-1.5"></i>บันทึกการตั้งค่าหน้าเว็บทั้งหมด
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIGHTBOX IMAGE MODAL ==================== -->
+  <div id="lightbox-modal" onclick="closeLightbox()" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <button type="button" onclick="closeLightbox()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-matte-800 text-white flex items-center justify-center hover:bg-accent hover:text-[#09090D] transition">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <img id="lightbox-img" src="" alt="Preview" onclick="event.stopPropagation()" class="max-w-full max-h-[88vh] rounded-2xl object-contain shadow-2xl border border-matte-border" />
+  </div>
+
+  <!-- ==================== CUSTOM CONFIRM MODAL (NO BROWSER CONFIRM) ==================== -->
+  <div id="confirm-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-matte-900 border border-matte-border rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl animate-fade-up">
+      <h4 id="confirm-title" class="font-bold text-lg text-white">ยืนยันการทำรายการ</h4>
+      <p id="confirm-message" class="text-sm text-zinc-400"></p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-xl bg-matte-800 text-zinc-300 text-xs font-bold hover:text-white">ยกเลิก</button>
+        <button type="button" onclick="closeConfirmModal(true)" class="px-5 py-2 rounded-xl bg-red-500 text-white text-xs font-bold hover:bg-red-600">ยืนยัน</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[80] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ==================== MAIN APPLICATION SCRIPT ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // ==================== CONSTANTS & DEFAULT DATA ====================
+    const ACCENT_PRESETS = {
+      pink:     { label: 'Pastel Pink',     hex: '#F5A9B8', hex2: '#A7C7E7', soft: 'rgba(245,169,184,0.14)', glow: 'rgba(245,169,184,0.35)' },
+      blue:     { label: 'Pastel Blue',     hex: '#A7C7E7', hex2: '#C7CEEA', soft: 'rgba(167,199,231,0.14)', glow: 'rgba(167,199,231,0.35)' },
+      mint:     { label: 'Pastel Mint',     hex: '#B5EAD7', hex2: '#A7C7E7', soft: 'rgba(181,234,215,0.14)', glow: 'rgba(181,234,215,0.35)' },
+      peach:    { label: 'Pastel Peach',    hex: '#FFDAC1', hex2: '#F5A9B8', soft: 'rgba(255,218,193,0.14)', glow: 'rgba(255,218,193,0.35)' },
+      lavender: { label: 'Pastel Lavender', hex: '#C7CEEA', hex2: '#F5A9B8', soft: 'rgba(199,206,234,0.14)', glow: 'rgba(199,206,234,0.35)' }
+    };
+
+    const SIGNATURE_SHADES = [
+      { name: 'Matte Black',     hex: '#1E1E24' },
+      { name: 'Cloud White',     hex: '#E6E7EC' },
+      { name: 'Cream Beige',     hex: '#F2DBC0' },
+      { name: 'Pastel Pink',     hex: '#F4A9B8' },
+      { name: 'Baby Blue',       hex: '#9FC0E4' },
+      { name: 'Soft Peach',      hex: '#EBB68D' },
+      { name: 'Matcha Mint',     hex: '#B1D6A0' },
+      { name: 'Berry Red',       hex: '#C43B4B' },
+      { name: 'Grape Purple',    hex: '#8455A8' },
+      { name: 'Midnight Navy',   hex: '#243C70' }
+    ];
+
+    const LIGHTER_COLORS = [
+      { name: 'แดง',  hex: '#E53935' },
+      { name: 'ส้ม',  hex: '#FB8C00' },
+      { name: 'ฟ้า',  hex: '#29B6F6' },
+      { name: 'เขียว', hex: '#43A047' },
+      { name: 'ม่วง', hex: '#8E24AA' }
+    ];
+
+    const DEFAULT_CONFIG = {
+      accentPreset: 'pink',
+      storeName: 'KNUCK KNUCK.',
+      instagramUrl: 'https://www.instagram.com/knuckknuck_/',
+      announcement: 'CUSTOM-MADE เคสไฟแช็คมีรูใส่นิ้ว เริ่มต้น 149.- | พร้อมไฟแช็ค 159.- | ใส่ชื่อ Custom +30.-',
+      heroBadge: 'CUSTOM-MADE FINGER-GRIP LIGHTER CASE • STARTS AT 149 THB',
+      heroTitle: 'KNUCK KNUCK. — GIMME SOME KNUCKs',
+      heroSubtitle: 'เคสไฟแช็คมีรูใส่นิ้ว (Finger-Grip Lighter Case) งาน Custom-Made สุดเท่ เลือกเฉดสีพาสเทลและสีด้านได้จุใจ 10 เฉดสี พร้อมรูห้อยพวงกุญแจ เลือกสีไฟแช็คได้ 5 สี และใส่ชื่อ Custom ของคุณเอง เริ่มต้นเพียง 149 บาท',
+      heroImage: '',
+      faviconUrl: '',
+      galleryTitle: 'ภาพผลงานจริง & แกลเลอรีร้าน',
+      galleryImages: [],
+      aboutTitle: 'สั่งทำ KNUCK KNUCK. ง่ายๆ ใน 3 ขั้นตอน',
+      aboutContent: 'ทุกชิ้นเป็นงานสั่งทำ Custom-Made พิถีพิถันทุกขั้นตอน พร้อมสลักโลโก้ KnuckKnuck ด้านหลังและรูร้อยพวงกุญแจ ใช้เวลาผลิตประมาณ 2-4 วันทำการ',
+      customNameFee: 30,
+      shippingFee: 40,
+      bankName: 'ธนาคารกสิกรไทย (KBank)',
+      bankAccount: '012-3-45678-9',
+      bankHolder: 'KNUCK KNUCK STUDIO',
+      paymentQrUrl: 'https://placehold.co/240x240/FFFFFF/09090D?text=PromptPay+QR'
+    };
+
+    const DEFAULT_PRODUCTS = [
+      {
+        id: 'prod-classic',
+        name: 'KNUCK Classic',
+        style: 'classic',
+        showcaseColorHex: '#F4A9B8',
+        priceBase: 149,
+        priceWithLighter: 159,
+        description: 'รุ่นคลาสสิกซิกเนเจอร์ เคสไฟแช็คมีรูใส่นิ้ว 4 รู พร้อมรูร้อยพวงกุญแจและสลัก KnuckKnuck ด้านหลัง เลือกได้ครบ 10 เฉดสี PICK YOUR SHADE',
+        imageUrl: '',
+        colors: SIGNATURE_SHADES
+      },
+      {
+        id: 'prod-winged',
+        name: 'KNUCK Winged / Horn Edition',
+        style: 'winged',
+        showcaseColorHex: '#F2DBC0',
+        priceBase: 169,
+        priceWithLighter: 179,
+        description: 'รุ่นแต่งเขี้ยว/ปีกโค้งดีไซน์จัดจ้าน จับถนัดมือ สไตล์สตรีทไม่ซ้ำใคร พร้อมรูร้อยพวงกุญแจและสลักชื่อร้านด้านหลัง',
+        imageUrl: '',
+        colors: SIGNATURE_SHADES
+      },
+      {
+        id: 'prod-bedazzled',
+        name: 'BEDAZZLED ERA',
+        style: 'bedazzled',
+        showcaseColorHex: '#F3ECE4',
+        priceBase: 249,
+        priceWithLighter: 259,
+        description: 'รุ่นกลิตเตอร์วิบวับประดับเพชรคริสตัลหลากสีสไตล์ Y2K งานแฮนด์เมดติดเพชรทีละเม็ด โดดเด่นสะดุดตาทุกมุมมอง',
+        imageUrl: '',
+        colors: [
+          { name: 'Glitter Pearl', hex: '#F3ECE4' },
+          { name: 'Pastel Pink',   hex: '#F4A9B8' },
+          { name: 'Baby Blue',     hex: '#9FC0E4' },
+          { name: 'Matte Black',   hex: '#1E1E24' },
+          { name: 'Grape Purple',  hex: '#8455A8' }
+        ]
+      }
+    ];
+
+    // ==================== STATE ====================
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'knuckknuck-store';
+
+    let storeConfig = { ...DEFAULT_CONFIG };
+    let products = DEFAULT_PRODUCTS.map(p => ({ ...p }));
+    let orders = [];
+    let cart = [];
+    let ownerUid = null;
+
+    let heroShadeIdx = 3; // Pastel Pink
+    let heroStyle = 'classic';
+    let lastOrderSummaryText = '';
+    let lastCreatedOrderCode = '';
+
+    let custState = {
+      product: null,
+      caseColor: SIGNATURE_SHADES[0],
+      withLighter: false,
+      lighterColor: LIGHTER_COLORS[0],
+      hasCustomName: false,
+      customName: '',
+      qty: 1
+    };
+
+    let uploadedSlipDataUrl = '';
+    let prodFormColors = [];
+    let siteFormGallery = [];
+    let activeAdminTab = 'products';
+    let confirmCallback = null;
+
+    let heroViewer = null;
+    let custViewer = null;
+    let cardSnapshotRenderer = null;
+    const cardSelectedHexMap = {};
+
+    // ==================== GITHUB PAGES STANDALONE CONFIG & LOCAL STORAGE ====================
+    // หากต้องการให้ลูกค้าหลายคนสั่งซื้อและซิงก์ออเดอร์เข้าหลังบ้านแบบเรียลไทม์บน GitHub Pages
+    // ให้นำ Firebase Config จาก console.firebase.google.com มาวางแทนค่า null ด้านล่างนี้
+    const MANUAL_FIREBASE_CONFIG = null;
+
+    function loadLocalState() {
+      try {
+        const savedCfg = localStorage.getItem('kk_store_config');
+        if (savedCfg) storeConfig = { ...DEFAULT_CONFIG, ...JSON.parse(savedCfg) };
+        const savedProds = localStorage.getItem('kk_products');
+        if (savedProds) {
+          const parsed = JSON.parse(savedProds);
+          if (Array.isArray(parsed) && parsed.length) products = parsed;
+        }
+        const savedOrders = localStorage.getItem('kk_orders');
+        if (savedOrders) orders = JSON.parse(savedOrders) || [];
+        const savedOwner = localStorage.getItem('kk_owner_uid');
+        if (savedOwner) ownerUid = savedOwner;
+      } catch (e) {
+        console.warn('LocalStorage load skipped:', e);
+      }
+    }
+
+    function saveLocalState() {
+      try {
+        localStorage.setItem('kk_store_config', JSON.stringify(storeConfig));
+        localStorage.setItem('kk_products', JSON.stringify(products));
+        localStorage.setItem('kk_orders', JSON.stringify(orders));
+        if (ownerUid) localStorage.setItem('kk_owner_uid', ownerUid);
+      } catch (e) {
+        console.warn('LocalStorage save warning (may exceed quota with large images):', e);
+      }
+    }
+
+    // ==================== SHARED 3D MODEL BUILDER (MATCHES REAL PRODUCT) ====================
+    function createRoundedRectShape(w, h, r) {
+      const s = new THREE.Shape();
+      const x = -w / 2;
+      const y = -h / 2;
+      s.moveTo(x + r, y);
+      s.lineTo(x + w - r, y);
+      s.quadraticCurveTo(x + w, y, x + w, y + r);
+      s.lineTo(x + w, y + h - r);
+      s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      s.lineTo(x + r, y + h);
+      s.quadraticCurveTo(x, y + h, x, y + h - r);
+      s.lineTo(x, y + r);
+      s.quadraticCurveTo(x, y, x + r, y);
+      return s;
+    }
+
+    function createBackEngraveMaps(caseHex) {
+      const w = 768;
+      const h = 220;
+
+      const diffCanvas = document.createElement('canvas');
+      diffCanvas.width = w;
+      diffCanvas.height = h;
+      const ctx = diffCanvas.getContext('2d');
+
+      ctx.fillStyle = caseHex;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 2;
+      for (let i = -h; i < w + h; i += 7) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i + h, h);
+        ctx.stroke();
+      }
+
+      const col = new THREE.Color(caseHex);
+      const lum = 0.299 * col.r + 0.587 * col.g + 0.114 * col.b;
+      const grooveInner = lum < 0.22 ? '#07070A' : 'rgba(0,0,0,0.48)';
+      const grooveEdgeDark = 'rgba(0,0,0,0.72)';
+      const grooveEdgeLight = lum < 0.22 ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.62)';
+
+      ctx.font = '900 104px "Space Grotesk", "Inter", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      ctx.fillStyle = grooveEdgeLight;
+      ctx.fillText('KnuckKnuck', w / 2 + 3, h / 2 + 3);
+      ctx.fillStyle = grooveEdgeDark;
+      ctx.fillText('KnuckKnuck', w / 2 - 3, h / 2 - 3);
+      ctx.fillStyle = grooveInner;
+      ctx.fillText('KnuckKnuck', w / 2, h / 2);
+
+      ctx.strokeStyle = lum < 0.22 ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.35)';
+      ctx.lineWidth = 3;
+      ctx.strokeText('KnuckKnuck', w / 2, h / 2);
+
+      const bumpCanvas = document.createElement('canvas');
+      bumpCanvas.width = w;
+      bumpCanvas.height = h;
+      const bCtx = bumpCanvas.getContext('2d');
+      bCtx.fillStyle = '#FFFFFF';
+      bCtx.fillRect(0, 0, w, h);
+      bCtx.font = '900 104px "Space Grotesk", "Inter", sans-serif';
+      bCtx.textAlign = 'center';
+      bCtx.textBaseline = 'middle';
+      bCtx.fillStyle = '#181818';
+      bCtx.fillText('KnuckKnuck', w / 2, h / 2);
+
+      const map = new THREE.CanvasTexture(diffCanvas);
+      map.encoding = THREE.sRGBEncoding;
+      const bumpMap = new THREE.CanvasTexture(bumpCanvas);
+      return { map, bumpMap };
+    }
+
+    function createFrontNameTexture(text, caseHex) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 160;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!text) return new THREE.CanvasTexture(canvas);
+
+      const col = new THREE.Color(caseHex);
+      const lum = 0.299 * col.r + 0.587 * col.g + 0.114 * col.b;
+      const mainColor = lum < 0.32 ? '#F4F4F8' : '#181822';
+      const shadowColor = lum < 0.32 ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.75)';
+
+      ctx.font = '900 84px "Space Grotesk", "Inter", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = shadowColor;
+      ctx.fillText(text.toUpperCase(), 261, 86);
+      ctx.fillStyle = mainColor;
+      ctx.fillText(text.toUpperCase(), 256, 80);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.encoding = THREE.sRGBEncoding;
+      return tex;
+    }
+
+    function createGlitterBump() {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#808080';
+      ctx.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 1600; i++) {
+        const v = Math.floor(Math.random() * 255);
+        ctx.fillStyle = `rgb(${v},${v},${v})`;
+        ctx.fillRect(Math.random() * 256, Math.random() * 256, 2.2, 2.2);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(3, 3);
+      return tex;
+    }
+
+    function buildKnuck3DGroup(opts) {
+      const {
+        caseHex = '#F4A9B8',
+        style = 'classic',
+        withLighter = true,
+        lighterHex = '#FB8C00',
+        customName = ''
+      } = opts;
+
+      const isBedazzled = style === 'bedazzled';
+      const isWinged = style === 'winged';
+
+      const caseMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(caseHex),
+        roughness: isBedazzled ? 0.24 : 0.42,
+        metalness: isBedazzled ? 0.22 : 0.06,
+        bumpMap: isBedazzled ? createGlitterBump() : null,
+        bumpScale: isBedazzled ? 0.035 : 0
+      });
+
+      const group = new THREE.Group();
+
+      // 1. Unified 4-Finger Scalloped Grip Frame (tightly fused rings matching real product photos)
+      const holes = [
+        { x: 0.42, y: 1.44 },
+        { x: 0.56, y: 0.49 },
+        { x: 0.54, y: -0.47 },
+        { x: 0.30, y: -1.41 }
+      ];
+      const innerR = 0.39;
+      const outerR = 0.62;
+      const plateDepth = 0.44;
+
+      holes.forEach((h) => {
+        const ringShape = new THREE.Shape();
+        ringShape.absarc(h.x, h.y, outerR, 0, Math.PI * 2, false);
+        const holePath = new THREE.Path();
+        holePath.absarc(h.x, h.y, innerR, 0, Math.PI * 2, true);
+        ringShape.holes.push(holePath);
+
+        const ringGeo = new THREE.ExtrudeGeometry(ringShape, {
+          depth: plateDepth,
+          bevelEnabled: true,
+          bevelThickness: 0.06,
+          bevelSize: 0.055,
+          bevelSegments: 5,
+          curveSegments: 36
+        });
+        ringGeo.translate(0, 0, -plateDepth / 2);
+        group.add(new THREE.Mesh(ringGeo, caseMat));
+      });
+
+      // 2. Smooth Curved Spine & Lower Keychain Heel (seamlessly connects sleeve & all 4 loops)
+      const spineShape = new THREE.Shape();
+      spineShape.moveTo(-1.14, 1.72);
+      spineShape.lineTo(0.28, 1.72);
+      spineShape.quadraticCurveTo(0.42, 0.50, 0.24, -1.22);
+      spineShape.quadraticCurveTo(0.18, -2.06, -0.38, -2.20);
+      spineShape.quadraticCurveTo(-1.14, -2.28, -1.14, -1.42);
+      spineShape.closePath();
+
+      const kcHole = new THREE.Path();
+      kcHole.absarc(-0.68, -1.78, 0.135, 0, Math.PI * 2, true);
+      spineShape.holes.push(kcHole);
+
+      const spineGeo = new THREE.ExtrudeGeometry(spineShape, {
+        depth: plateDepth,
+        bevelEnabled: true,
+        bevelThickness: 0.06,
+        bevelSize: 0.055,
+        bevelSegments: 5,
+        curveSegments: 32
+      });
+      spineGeo.translate(0, 0, -plateDepth / 2);
+      group.add(new THREE.Mesh(spineGeo, caseMat));
+
+      // 3. Smooth Rounded Lighter Sleeve Pocket
+      const sleeveShape = createRoundedRectShape(1.12, 0.80, 0.24);
+      const sleeveGeo = new THREE.ExtrudeGeometry(sleeveShape, {
+        depth: 2.95,
+        bevelEnabled: true,
+        bevelThickness: 0.06,
+        bevelSize: 0.05,
+        bevelSegments: 5,
+        curveSegments: 24
+      });
+      sleeveGeo.rotateX(Math.PI / 2);
+      sleeveGeo.translate(-0.64, 1.82, 0.02);
+      group.add(new THREE.Mesh(sleeveGeo, caseMat));
+
+      // Recessed lighter slot
+      const slotShape = createRoundedRectShape(0.88, 0.56, 0.16);
+      const slotGeo = new THREE.ExtrudeGeometry(slotShape, { depth: 0.08, bevelEnabled: false, curveSegments: 16 });
+      slotGeo.rotateX(Math.PI / 2);
+      slotGeo.translate(-0.64, 1.89, 0.02);
+      group.add(new THREE.Mesh(slotGeo, new THREE.MeshStandardMaterial({ color: 0x09090D, roughness: 0.9 })));
+
+      // 4. Winged / Horn Edition Hollow Curved Tips (matches the real Cream Beige PS5 photo!)
+      if (isWinged) {
+        const makeHollowHorn = (flipY = false) => {
+          const hs = new THREE.Shape();
+          hs.moveTo(0.88, 1.15);
+          hs.quadraticCurveTo(1.52, 1.24, 1.74, 0.68);
+          hs.quadraticCurveTo(1.48, 0.42, 0.96, 0.48);
+          hs.closePath();
+
+          const hHole = new THREE.Path();
+          hHole.moveTo(1.06, 0.96);
+          hHole.quadraticCurveTo(1.38, 0.98, 1.48, 0.72);
+          hHole.quadraticCurveTo(1.32, 0.60, 1.06, 0.66);
+          hHole.closePath();
+          hs.holes.push(hHole);
+
+          const hGeo = new THREE.ExtrudeGeometry(hs, {
+            depth: plateDepth * 0.94,
+            bevelEnabled: true,
+            bevelThickness: 0.05,
+            bevelSize: 0.045,
+            bevelSegments: 4
+          });
+          hGeo.translate(0, 0, -(plateDepth * 0.94) / 2);
+          const mesh = new THREE.Mesh(hGeo, caseMat);
+          if (flipY) {
+            mesh.scale.y = -1;
+            mesh.position.set(-0.08, 0.02, 0);
+          }
+          return mesh;
+        };
+        group.add(makeHollowHorn(false));
+        group.add(makeHollowHorn(true));
+      }
+
+      // 5. Realistic 3D Lighter Inserted
+      if (withLighter) {
+        const lighterGroup = new THREE.Group();
+
+        const tankShape = createRoundedRectShape(0.86, 0.52, 0.16);
+        const tankGeo = new THREE.ExtrudeGeometry(tankShape, { depth: 0.56, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 3 });
+        tankGeo.rotateX(Math.PI / 2);
+        tankGeo.translate(-0.64, 2.40, 0.02);
+        const tankMat = new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(lighterHex),
+          roughness: 0.12,
+          metalness: 0.05,
+          transparent: true,
+          opacity: 0.88
+        });
+        lighterGroup.add(new THREE.Mesh(tankGeo, tankMat));
+
+        const collarShape = createRoundedRectShape(0.88, 0.54, 0.16);
+        const collarGeo = new THREE.ExtrudeGeometry(collarShape, { depth: 0.14, bevelEnabled: false });
+        collarGeo.rotateX(Math.PI / 2);
+        collarGeo.translate(-0.64, 2.46, 0.02);
+        const darkPlastic = new THREE.MeshStandardMaterial({ color: 0x1A1A22, roughness: 0.45 });
+        lighterGroup.add(new THREE.Mesh(collarGeo, darkPlastic));
+
+        const metalMat = new THREE.MeshStandardMaterial({ color: 0xE6EAF2, roughness: 0.16, metalness: 0.92 });
+        const guardShape = createRoundedRectShape(0.44, 0.46, 0.10);
+        const guardGeo = new THREE.ExtrudeGeometry(guardShape, { depth: 0.54, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 2 });
+        guardGeo.rotateX(Math.PI / 2);
+        guardGeo.translate(-0.84, 2.98, 0.02);
+        lighterGroup.add(new THREE.Mesh(guardGeo, metalMat));
+
+        const leverMesh = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.28, 0.36), darkPlastic);
+        leverMesh.position.set(-0.40, 2.60, 0.02);
+        lighterGroup.add(leverMesh);
+
+        const wheelMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.22, 20), metalMat);
+        wheelMesh.rotation.x = Math.PI / 2;
+        wheelMesh.position.set(-0.52, 2.78, 0.02);
+        lighterGroup.add(wheelMesh);
+
+        group.add(lighterGroup);
+      }
+
+      // 6. Front Raised Custom Name
+      if (customName && customName.trim()) {
+        const nameTex = createFrontNameTexture(customName.trim(), caseHex);
+        const nameMat = new THREE.MeshBasicMaterial({ map: nameTex, transparent: true, depthWrite: false });
+        const namePlane = new THREE.Mesh(new THREE.PlaneGeometry(2.15, 0.68), nameMat);
+        namePlane.rotation.z = Math.PI / 2;
+        namePlane.position.set(-0.64, 0.35, 0.485);
+        group.add(namePlane);
+      }
+
+      // 7. Backside Recessed Engraving "KnuckKnuck"
+      const { map: backMap, bumpMap: backBump } = createBackEngraveMaps(caseHex);
+      const backMat = new THREE.MeshStandardMaterial({
+        map: backMap,
+        bumpMap: backBump,
+        bumpScale: 0.04,
+        roughness: 0.52,
+        metalness: 0.08
+      });
+      const backPlane = new THREE.Mesh(new THREE.PlaneGeometry(2.35, 0.72), backMat);
+      backPlane.rotation.y = Math.PI;
+      backPlane.rotation.z = -Math.PI / 2;
+      backPlane.position.set(-0.64, 0.35, -0.445);
+      group.add(backPlane);
+
+      // 8. Bedazzled Era Dense 3D Rhinestones along finger rims & sleeve (matches real Bedazzled photo!)
+      if (isBedazzled) {
+        const gemPalette = [0xFF5CA8, 0x38BDF8, 0xFFE45E, 0xC084FC, 0x4ADE80, 0xFF4D6D, 0xFFFFFF, 0xF97316];
+        const gemGeo = new THREE.OctahedronGeometry(0.08, 0);
+
+        const sleeveGems = [
+          [-0.88, 1.46, 0.48, 1.25], [-0.46, 1.24, 0.48, 0.95], [-0.82, 0.92, 0.48, 1.4],
+          [-0.44, 0.56, 0.48, 1.05], [-0.84, 0.16, 0.48, 1.5], [-0.46, -0.26, 0.48, 1.25],
+          [-0.82, -0.68, 0.48, 1.35], [-0.44, -1.06, 0.48, 1.05], [-0.26, -1.52, 0.29, 1.45],
+          [0.06, -1.86, 0.29, 1.55], [-0.48, -1.96, 0.29, 1.1]
+        ];
+
+        // Trace mini gems around the outer arc of each finger loop
+        const rimGems = [];
+        holes.forEach((h, hi) => {
+          const angles = [-0.65, -0.2, 0.25, 0.7, 1.15];
+          angles.forEach((ang, ai) => {
+            const gx = h.x + Math.cos(ang) * 0.51;
+            const gy = h.y + Math.sin(ang) * 0.51;
+            rimGems.push([gx, gy, 0.285, 0.82 + ((hi + ai) % 2) * 0.15]);
+          });
+        });
+
+        [...sleeveGems, ...rimGems].forEach(([gx, gy, gz, sc], idx) => {
+          const c = gemPalette[idx % gemPalette.length];
+          const gemMat = new THREE.MeshStandardMaterial({
+            color: c,
+            roughness: 0.08,
+            metalness: 0.65,
+            emissive: c,
+            emissiveIntensity: 0.28
+          });
+          const gem = new THREE.Mesh(gemGeo, gemMat);
+          gem.position.set(gx, gy, gz);
+          gem.scale.set(sc, sc, 0.52 * sc);
+          group.add(gem);
+        });
+      }
+
+      group.position.set(0.06, -0.22, 0);
+      return group;
+    }
+
+    // Offscreen 3D Studio Photography Snapshot Generator for Product Cards
+    function render3DCardSnapshot(opts) {
+      if (typeof THREE === 'undefined') return '';
+      try {
+        const w = 520;
+        const h = 390;
+        if (!cardSnapshotRenderer) {
+          cardSnapshotRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+          cardSnapshotRenderer.setSize(w, h);
+          cardSnapshotRenderer.setPixelRatio(1);
+          cardSnapshotRenderer.outputEncoding = THREE.sRGBEncoding;
+          cardSnapshotRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+          cardSnapshotRenderer.toneMappingExposure = 1.15;
+        }
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(34, w / h, 0.1, 100);
+        camera.position.set(0, 0.1, 7.6);
+
+        // Crisp 3-Point Studio Product Lighting (makes Matte Black & Pastel both gleam)
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x242436, 0.92));
+
+        const key = new THREE.DirectionalLight(0xffffff, 1.25);
+        key.position.set(5, 7, 9);
+        scene.add(key);
+
+        const fill = new THREE.DirectionalLight(0xF5A9B8, 0.55);
+        fill.position.set(-7, 2, 6);
+        scene.add(fill);
+
+        const rim = new THREE.DirectionalLight(0xA7C7E7, 1.0);
+        rim.position.set(-2, 5, -7);
+        scene.add(rim);
+
+        const model = buildKnuck3DGroup(opts);
+        model.rotation.set(0.08, -0.34, 0.06);
+        scene.add(model);
+
+        cardSnapshotRenderer.render(scene, camera);
+        return cardSnapshotRenderer.domElement.toDataURL('image/png');
+      } catch (e) {
+        console.warn('Card 3D snapshot fallback:', e);
+        return '';
+      }
+    }
+
+    // ==================== INTERACTIVE 3D VIEWER CLASS (THREE.JS) ====================
+    class Knuck3DViewer {
+      constructor(containerEl, initialOpts = {}) {
+        this.container = containerEl;
+        this.opts = {
+          caseHex: initialOpts.caseHex || '#F4A9B8',
+          style: initialOpts.style || 'classic',
+          withLighter: Boolean(initialOpts.withLighter),
+          lighterHex: initialOpts.lighterHex || '#E53935',
+          customName: initialOpts.customName || ''
+        };
+        this.running = false;
+        this.autoRotate = true;
+        this.isDragging = false;
+        this.prevX = 0;
+        this.prevY = 0;
+        this.rotY = 0.25;
+        this.rotX = 0.08;
+        this.targetRotY = 0.25;
+        this.targetRotX = 0.08;
+        this.camZ = 8.0;
+        this.targetCamZ = 8.0;
+        this.clock = 0;
+
+        this.initScene();
+        this.buildModel();
+        this.bindEvents();
+        this.start();
+      }
+
+      initScene() {
+        const w = Math.max(200, this.container.clientWidth || 360);
+        const h = Math.max(200, this.container.clientHeight || 340);
+
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100);
+        this.camera.position.set(0, 0, this.camZ);
+
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.setSize(w, h);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.08;
+
+        const oldCanvas = this.container.querySelector('canvas');
+        if (oldCanvas) oldCanvas.remove();
+        this.container.insertBefore(this.renderer.domElement, this.container.firstChild);
+
+        // Soft 3-Point + Pastel Rim Studio Lighting
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x1a1a28, 0.72);
+        this.scene.add(hemi);
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 1.05);
+        keyLight.position.set(5, 7, 9);
+        this.scene.add(keyLight);
+
+        const pastelFill = new THREE.DirectionalLight(0xF5A9B8, 0.42);
+        pastelFill.position.set(-7, 2, 5);
+        this.scene.add(pastelFill);
+
+        const rimLight = new THREE.DirectionalLight(0xA7C7E7, 0.78);
+        rimLight.position.set(1, -3, -9);
+        this.scene.add(rimLight);
+
+        this.pivot = new THREE.Group();
+        this.scene.add(this.pivot);
+
+        if (typeof ResizeObserver !== 'undefined') {
+          this.resizeObserver = new ResizeObserver(() => this.resize());
+          this.resizeObserver.observe(this.container);
+        }
+      }
+
+      resize() {
+        if (!this.container || !this.renderer) return;
+        const w = this.container.clientWidth;
+        const h = this.container.clientHeight;
+        if (w > 10 && h > 10) {
+          this.camera.aspect = w / h;
+          this.camera.updateProjectionMatrix();
+          this.renderer.setSize(w, h);
+        }
+      }
+
+      buildModel() {
+        while (this.pivot.children.length > 0) {
+          this.pivot.remove(this.pivot.children[0]);
+        }
+        const group = buildKnuck3DGroup(this.opts);
+        this.pivot.add(group);
+      }
+
+      update(newOpts = {}) {
+        this.opts = { ...this.opts, ...newOpts };
+        this.buildModel();
+      }
+
+      setView(side) {
+        this.autoRotate = false;
+        if (side === 'back') {
+          this.targetRotY = Math.PI;
+          this.targetRotX = 0.04;
+        } else {
+          this.targetRotY = 0.22;
+          this.targetRotX = 0.06;
+        }
+      }
+
+      zoom(delta) {
+        this.targetCamZ = Math.max(5.0, Math.min(12.0, this.targetCamZ + delta));
+      }
+
+      bindEvents() {
+        const el = this.renderer.domElement;
+
+        const onDown = (x, y) => {
+          this.isDragging = true;
+          this.autoRotate = false;
+          this.prevX = x;
+          this.prevY = y;
+        };
+        const onMove = (x, y) => {
+          if (!this.isDragging) return;
+          const dx = x - this.prevX;
+          const dy = y - this.prevY;
+          this.targetRotY += dx * 0.012;
+          this.targetRotX = Math.max(-1.1, Math.min(1.1, this.targetRotX + dy * 0.01));
+          this.prevX = x;
+          this.prevY = y;
+        };
+        const onUp = () => { this.isDragging = false; };
+
+        el.addEventListener('mousedown', (e) => onDown(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', onUp);
+
+        el.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) onDown(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        el.addEventListener('touchmove', (e) => {
+          if (e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        el.addEventListener('touchend', onUp);
+
+        el.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          this.zoom(e.deltaY * 0.004);
+        }, { passive: false });
+      }
+
+      start() {
+        if (this.running) return;
+        this.running = true;
+        const loop = () => {
+          if (!this.running) return;
+          requestAnimationFrame(loop);
+
+          this.clock += 0.025;
+          if (this.autoRotate && !this.isDragging) {
+            this.targetRotY += 0.006;
+          }
+
+          this.rotY += (this.targetRotY - this.rotY) * 0.12;
+          this.rotX += (this.targetRotX - this.rotX) * 0.12;
+          this.camZ += (this.targetCamZ - this.camZ) * 0.12;
+
+          this.pivot.rotation.y = this.rotY;
+          this.pivot.rotation.x = this.rotX;
+          this.pivot.position.y = Math.sin(this.clock) * 0.08;
+          this.camera.position.z = this.camZ;
+
+          this.renderer.render(this.scene, this.camera);
+        };
+        loop();
+      }
+
+      stop() {
+        this.running = false;
+      }
+    }
+
+    // ==================== UTILITIES ====================
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    window.showToast = function(msg, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const el = document.createElement('div');
+      const isErr = type === 'error';
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl border text-xs sm:text-sm font-bold shadow-2xl flex items-center gap-2.5 animate-fade-up ${
+        isErr ? 'bg-red-950/95 border-red-500/60 text-red-200' : 'bg-matte-900/95 border-accent/60 text-white'
+      }`;
+      el.innerHTML = `<i class="fa-solid ${isErr ? 'fa-circle-exclamation text-red-400' : 'fa-circle-check text-accent'}"></i><span>${escapeHtml(msg)}</span>`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 3000);
+    };
+
+    window.copyTextToClipboard = function(text, successMsg = 'คัดลอกเรียบร้อยแล้ว') {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(successMsg);
+      } catch (e) {
+        showToast('ไม่สามารถคัดลอกได้ กรุณาคัดลอกด้วยตนเอง', 'error');
+      }
+    };
+
+    function compressImageFile(file, maxDim = 680, quality = 0.72) {
+      return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith('image/')) {
+          return reject(new Error('กรุณาเลือกไฟล์รูปภาพเท่านั้น'));
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w >= h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์รูปภาพได้'));
+          img.src = ev.target.result;
+        };
+        reader.onerror = () => reject(new Error('เกิดข้อผิดพลาดในการโหลดไฟล์'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    window.openLightbox = function(url) {
+      if (!url) return;
+      document.getElementById('lightbox-img').src = url;
+      const modal = document.getElementById('lightbox-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    window.closeLightbox = function() {
+      const modal = document.getElementById('lightbox-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    function openConfirmModal(title, message, onConfirm) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      confirmCallback = onConfirm;
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    window.closeConfirmModal = function(confirmed) {
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      if (confirmed && typeof confirmCallback === 'function') {
+        confirmCallback();
+      }
+      confirmCallback = null;
+    };
+
+    // ==================== THEME & UI RENDERING ====================
+    function applyAccentTheme(presetKey) {
+      const p = ACCENT_PRESETS[presetKey] || ACCENT_PRESETS.pink;
+      document.documentElement.style.setProperty('--accent-hex', p.hex);
+      document.documentElement.style.setProperty('--accent-2-hex', p.hex2);
+      document.documentElement.style.setProperty('--accent-soft', p.soft);
+      document.documentElement.style.setProperty('--accent-glow', p.glow);
+    }
+
+    function applyStoreConfigToUI() {
+      const c = storeConfig;
+      applyAccentTheme(c.accentPreset || 'pink');
+
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      setTxt('ui-store-name', c.storeName);
+      setTxt('ui-announcement', c.announcement);
+      setTxt('ui-hero-badge', c.heroBadge);
+      setTxt('ui-hero-title', c.heroTitle);
+      setTxt('ui-hero-subtitle', c.heroSubtitle);
+      setTxt('ui-about-title', c.aboutTitle);
+      setTxt('ui-about-content', c.aboutContent);
+      setTxt('co-bank-name', c.bankName);
+      setTxt('co-bank-acc', c.bankAccount);
+      setTxt('co-bank-holder', c.bankHolder);
+
+      ['ui-ig-nav', 'ui-ig-mobile', 'ui-ig-footer'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && c.instagramUrl) el.href = c.instagramUrl;
+      });
+
+      const qrEl = document.getElementById('co-qr-img');
+      if (qrEl && c.paymentQrUrl) qrEl.src = c.paymentQrUrl;
+
+      // Update Browser Tab Favicon if owner uploaded a custom one
+      const favEl = document.getElementById('site-favicon');
+      if (favEl && c.faviconUrl && c.faviconUrl.trim()) {
+        favEl.type = 'image/png';
+        favEl.href = c.faviconUrl.trim();
+      }
+
+      // Hero Custom Image vs 3D Stage
+      const customImgWrap = document.getElementById('hero-custom-img-wrap');
+      const hero3dSec = document.getElementById('hero-3d-section');
+      const customImgEl = document.getElementById('ui-hero-custom-img');
+      if (c.heroImage && c.heroImage.trim()) {
+        customImgEl.src = c.heroImage.trim();
+        customImgWrap.classList.remove('hidden');
+        hero3dSec.classList.add('hidden');
+      } else {
+        customImgWrap.classList.add('hidden');
+        hero3dSec.classList.remove('hidden');
+      }
+
+      document.querySelectorAll('.ui-custom-fee-inline').forEach(el => {
+        el.textContent = c.customNameFee;
+      });
+
+      renderLookbookSection();
+      renderCartUI();
+    }
+
+    function renderHeroShadeSwatches() {
+      const wrap = document.getElementById('hero-shade-swatches');
+      const barWrap = document.getElementById('shade-palette-pills');
+      if (wrap) {
+        wrap.innerHTML = SIGNATURE_SHADES.map((s, idx) => `
+          <button type="button" onclick="selectHeroShade(${idx})" title="${escapeHtml(s.name)}"
+            class="w-7 h-7 rounded-full border-2 shrink-0 transition ${idx === heroShadeIdx ? 'border-white scale-110 ring-2 ring-accent' : 'border-matte-border hover:scale-105'}"
+            style="background-color: ${s.hex};"></button>
+        `).join('');
+      }
+      if (barWrap) {
+        barWrap.innerHTML = SIGNATURE_SHADES.map((s, idx) => `
+          <button type="button" onclick="selectHeroShade(${idx}); window.scrollTo({top:0, behavior:'smooth'});"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-matte-950 border border-matte-border hover:border-accent text-xs text-zinc-200 transition">
+            <span class="w-3 h-3 rounded-full border border-white/20" style="background:${s.hex}"></span>
+            <span>${escapeHtml(s.name)}</span>
+          </button>
+        `).join('');
+      }
+    }
+
+    window.selectHeroShade = function(idx) {
+      heroShadeIdx = idx;
+      const shade = SIGNATURE_SHADES[idx] || SIGNATURE_SHADES[0];
+      const lbl = document.getElementById('hero-shade-label');
+      if (lbl) lbl.textContent = shade.name;
+      renderHeroShadeSwatches();
+      if (heroViewer) heroViewer.update({ caseHex: shade.hex });
+    };
+
+    window.heroSetStyle = function(style) {
+      heroStyle = style;
+      ['classic', 'winged', 'bedazzled'].forEach(st => {
+        const btn = document.getElementById(`hero-style-${st}`);
+        if (!btn) return;
+        btn.className = st === style
+          ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-accent text-[#09090D] transition'
+          : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-zinc-300 hover:text-white transition';
+      });
+      if (heroViewer) heroViewer.update({ style });
+    };
+
+    window.heroSetCameraView = function(side) {
+      if (heroViewer) heroViewer.setView(side);
+    };
+
+    window.previewCardShade = function(prodId, hex) {
+      cardSelectedHexMap[prodId] = hex;
+      const prod = products.find(p => p.id === prodId);
+      if (!prod) return;
+      const imgEl = document.getElementById(`card-img-${prodId}`);
+      if (imgEl && !prod.imageUrl) {
+        const snap = render3DCardSnapshot({
+          caseHex: hex,
+          style: prod.style || 'classic',
+          withLighter: true,
+          lighterHex: prod.style === 'bedazzled' ? '#FB8C00' : '#E53935',
+          customName: ''
+        });
+        if (snap) imgEl.src = snap;
+      }
+      // Highlight selected swatch ring on the card
+      document.querySelectorAll(`[data-card-swatch="${prodId}"]`).forEach(btn => {
+        const isSel = btn.dataset.hex === hex;
+        btn.classList.toggle('ring-2', isSel);
+        btn.classList.toggle('ring-white', isSel);
+        btn.classList.toggle('scale-110', isSel);
+      });
+    };
+
+    function renderProductsGrid() {
+      const grid = document.getElementById('product-grid');
+      if (!grid) return;
+
+      grid.innerHTML = products.map(p => {
+        const defaultHex = cardSelectedHexMap[p.id] || p.showcaseColorHex || (p.colors && p.colors[3] ? p.colors[3].hex : (p.colors && p.colors[0] ? p.colors[0].hex : '#F4A9B8'));
+        const cardImgSrc = p.imageUrl
+          ? escapeHtml(p.imageUrl)
+          : render3DCardSnapshot({
+              caseHex: defaultHex,
+              style: p.style || 'classic',
+              withLighter: true,
+              lighterHex: p.style === 'bedazzled' ? '#FB8C00' : '#E53935',
+              customName: ''
+            });
+
+        const swatches = (p.colors || []).slice(0, 7).map(c => {
+          const isActive = c.hex === defaultHex;
+          return `<button type="button" data-card-swatch="${p.id}" data-hex="${c.hex}" onclick="previewCardShade('${p.id}', '${c.hex}')" title="ดูสี ${escapeHtml(c.name)}" class="w-5 h-5 rounded-full border border-white/30 inline-block transition hover:scale-110 ${isActive ? 'ring-2 ring-white scale-110' : ''}" style="background:${c.hex}"></button>`;
+        }).join('');
+        const extraCount = (p.colors || []).length > 7 ? `<span class="text-[11px] text-zinc-400">+${p.colors.length - 7}</span>` : '';
+
+        return `
+          <div class="rounded-3xl bg-matte-900 border border-matte-border overflow-hidden flex flex-col pastel-glow-hover">
+            <div onclick="openCustomizer('${p.id}')" class="relative aspect-[4/3] bg-gradient-to-b from-[#1E1E2E] via-[#13131E] to-[#0B0B11] border-b border-matte-border flex items-center justify-center overflow-hidden cursor-pointer group">
+              <!-- Soft Pastel Studio Spotlight -->
+              <div class="pointer-events-none absolute w-48 h-48 rounded-full blur-3xl opacity-25 transition group-hover:opacity-40" style="background: radial-gradient(circle, ${defaultHex} 0%, transparent 70%);"></div>
+              <img id="card-img-${p.id}" src="${cardImgSrc}" alt="${escapeHtml(p.name)}" class="relative z-10 w-full h-full ${p.imageUrl ? 'object-cover' : 'object-contain p-2'} group-hover:scale-105 transition duration-500 drop-shadow-[0_18px_28px_rgba(0,0,0,0.65)]" />
+              <span class="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-xl bg-matte-950/85 backdrop-blur-md border border-matte-border text-[10px] font-bold uppercase tracking-wider text-accent">
+                <i class="fa-solid fa-cube mr-1"></i>3D Preview
+              </span>
+            </div>
+
+            <div class="p-5 flex-1 flex flex-col justify-between gap-4">
+              <div class="space-y-2">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="font-display font-extrabold text-xl text-white">${escapeHtml(p.name)}</h3>
+                  <div class="text-right shrink-0">
+                    <div class="font-display font-extrabold text-lg text-accent">฿${p.priceBase}</div>
+                    <div class="text-[10px] text-zinc-400">พร้อมไฟแช็ค ฿${p.priceWithLighter}</div>
+                  </div>
+                </div>
+                <p class="text-xs text-zinc-400 leading-relaxed line-clamp-2">${escapeHtml(p.description || '')}</p>
+                <div class="flex items-center gap-1.5 pt-1">${swatches}${extraCount}</div>
+              </div>
+
+              <button type="button" onclick="openCustomizer('${p.id}')" class="w-full py-3 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-sm hover:opacity-95 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-sliders"></i>
+                <span>ปรับแต่ง 3D &amp; สั่งซื้อ</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderLookbookSection() {
+      const section = document.getElementById('lookbook-section');
+      const grid = document.getElementById('ui-gallery-grid');
+      const titleEl = document.getElementById('ui-gallery-title');
+      if (!section || !grid) return;
+
+      const list = Array.isArray(storeConfig.galleryImages) ? storeConfig.galleryImages : [];
+      if (!list.length) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      section.classList.remove('hidden');
+      if (titleEl) titleEl.textContent = storeConfig.galleryTitle || 'ภาพผลงานจริง & แกลเลอรีร้าน';
+
+      grid.innerHTML = list.map(item => `
+        <div onclick="openLightbox('${escapeHtml(item.imageUrl)}')" class="group relative rounded-2xl overflow-hidden bg-matte-900 border border-matte-border pastel-glow-hover cursor-pointer aspect-square">
+          <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.caption || 'KNUCK KNUCK.')}" onerror="this.src='https://placehold.co/400x400/13131A/F5A9B8?text=KNUCK+KNUCK';" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+          ${item.caption ? `
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 pt-8">
+              <p class="text-xs font-semibold text-white line-clamp-2">${escapeHtml(item.caption)}</p>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    // ==================== CUSTOMIZER MODAL LOGIC ====================
+    window.openCustomizer = function(productId) {
+      const prod = products.find(p => p.id === productId);
+      if (!prod) return;
+
+      const defaultColor = (prod.colors && prod.colors[0]) ? prod.colors[0] : SIGNATURE_SHADES[0];
+      custState = {
+        product: prod,
+        caseColor: defaultColor,
+        withLighter: false,
+        lighterColor: LIGHTER_COLORS[0],
+        hasCustomName: false,
+        customName: '',
+        qty: 1
+      };
+
+      document.getElementById('cust-prod-title').textContent = prod.name;
+      document.getElementById('cust-prod-desc').textContent = prod.description || '';
+      document.getElementById('opt-price-case').textContent = `฿${prod.priceBase}`;
+      document.getElementById('opt-price-lighter').textContent = `฿${prod.priceWithLighter}`;
+      document.getElementById('cust-name-toggle').checked = false;
+      document.getElementById('cust-name-text').value = '';
+      document.getElementById('cust-name-input-wrap').classList.add('hidden');
+      document.getElementById('cust-qty-val').textContent = '1';
+
+      renderCustomizerControls();
+
+      const modal = document.getElementById('customizer-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      // Initialize or update 3D Viewer inside Customizer
+      setTimeout(() => {
+        const container = document.getElementById('cust-3d-container');
+        if (!custViewer) {
+          custViewer = new Knuck3DViewer(container, {
+            caseHex: custState.caseColor.hex,
+            style: prod.style || 'classic',
+            withLighter: false,
+            lighterHex: custState.lighterColor.hex,
+            customName: ''
+          });
+        } else {
+          custViewer.update({
+            caseHex: custState.caseColor.hex,
+            style: prod.style || 'classic',
+            withLighter: false,
+            lighterHex: custState.lighterColor.hex,
+            customName: ''
+          });
+          custViewer.setView('front');
+          custViewer.start();
+          custViewer.resize();
+        }
+      }, 40);
+    };
+
+    window.closeCustomizer = function() {
+      const modal = document.getElementById('customizer-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      if (custViewer) custViewer.stop();
+    };
+
+    window.custSetCameraView = function(side) {
+      if (custViewer) custViewer.setView(side);
+    };
+
+    window.custZoom = function(delta) {
+      if (custViewer) custViewer.zoom(delta);
+    };
+
+    function renderCustomizerControls() {
+      const prod = custState.product;
+      if (!prod) return;
+
+      // Case colors
+      document.getElementById('cust-selected-color-name').textContent = custState.caseColor.name;
+      const colorWrap = document.getElementById('cust-color-options');
+      colorWrap.innerHTML = (prod.colors || SIGNATURE_SHADES).map((c, idx) => {
+        const active = c.name === custState.caseColor.name;
+        return `
+          <button type="button" onclick="selectCustCaseColor(${idx})"
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition ${active ? 'border-accent bg-accent-soft text-white' : 'border-matte-border bg-matte-950 text-zinc-300 hover:border-zinc-500'}">
+            <span class="w-4 h-4 rounded-full border border-white/25" style="background:${c.hex}"></span>
+            <span>${escapeHtml(c.name)}</span>
+          </button>
+        `;
+      }).join('');
+
+      // Lighter option buttons
+      const btnOnly = document.getElementById('opt-case-only');
+      const btnWith = document.getElementById('opt-with-lighter');
+      btnOnly.className = !custState.withLighter
+        ? 'p-3.5 rounded-2xl border-2 border-accent bg-accent-soft text-left transition'
+        : 'p-3.5 rounded-2xl border border-matte-border bg-matte-950 text-left hover:border-zinc-500 transition';
+      btnWith.className = custState.withLighter
+        ? 'p-3.5 rounded-2xl border-2 border-accent bg-accent-soft text-left transition'
+        : 'p-3.5 rounded-2xl border border-matte-border bg-matte-950 text-left hover:border-zinc-500 transition';
+
+      // Lighter 5-color swatches
+      const lPicker = document.getElementById('lighter-color-picker');
+      if (custState.withLighter) {
+        lPicker.classList.remove('hidden');
+        document.getElementById('cust-lighter-color-label').textContent = custState.lighterColor.name;
+        document.getElementById('cust-lighter-swatches').innerHTML = LIGHTER_COLORS.map((lc, idx) => {
+          const active = lc.name === custState.lighterColor.name;
+          return `
+            <button type="button" onclick="selectCustLighterColor(${idx})"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition ${active ? 'border-accent bg-accent-soft text-white' : 'border-matte-border bg-matte-950 text-zinc-300'}">
+              <span class="w-3.5 h-3.5 rounded-full" style="background:${lc.hex}"></span>
+              <span>สี${lc.name}</span>
+            </button>
+          `;
+        }).join('');
+      } else {
+        lPicker.classList.add('hidden');
+      }
+
+      updateCustPrice();
+    }
+
+    function updateCustPrice() {
+      const prod = custState.product;
+      if (!prod) return;
+      const base = custState.withLighter ? Number(prod.priceWithLighter) : Number(prod.priceBase);
+      const nameFee = custState.hasCustomName ? Number(storeConfig.customNameFee || 30) : 0;
+      const total = (base + nameFee) * custState.qty;
+      document.getElementById('cust-total-price').textContent = `฿${total.toLocaleString()}`;
+    }
+
+    window.selectCustCaseColor = function(idx) {
+      const list = custState.product.colors || SIGNATURE_SHADES;
+      custState.caseColor = list[idx] || list[0];
+      renderCustomizerControls();
+      if (custViewer) custViewer.update({ caseHex: custState.caseColor.hex });
+    };
+
+    window.selectLighterOption = function(withLighter) {
+      custState.withLighter = withLighter;
+      renderCustomizerControls();
+      if (custViewer) custViewer.update({ withLighter, lighterHex: custState.lighterColor.hex });
+    };
+
+    window.selectCustLighterColor = function(idx) {
+      custState.lighterColor = LIGHTER_COLORS[idx] || LIGHTER_COLORS[0];
+      renderCustomizerControls();
+      if (custViewer) custViewer.update({ lighterHex: custState.lighterColor.hex });
+    };
+
+    window.toggleCustomNameInput = function() {
+      const checked = document.getElementById('cust-name-toggle').checked;
+      custState.hasCustomName = checked;
+      const wrap = document.getElementById('cust-name-input-wrap');
+      if (checked) {
+        wrap.classList.remove('hidden');
+        document.getElementById('cust-name-text').focus();
+      } else {
+        wrap.classList.add('hidden');
+        custState.customName = '';
+        document.getElementById('cust-name-text').value = '';
+      }
+      updateCustPrice();
+      if (custViewer) custViewer.update({ customName: custState.hasCustomName ? custState.customName : '' });
+    };
+
+    window.onCustomNameInput = function() {
+      custState.customName = document.getElementById('cust-name-text').value.trim();
+      if (custViewer) {
+        custViewer.update({ customName: custState.customName });
+        custViewer.setView('front');
+      }
+    };
+
+    window.changeCustQty = function(delta) {
+      custState.qty = Math.max(1, custState.qty + delta);
+      document.getElementById('cust-qty-val').textContent = custState.qty;
+      updateCustPrice();
+    };
+
+    window.addCustomizedToCart = function() {
+      const prod = custState.product;
+      if (!prod) return;
+      if (custState.hasCustomName && !custState.customName) {
+        showToast('กรุณาพิมพ์ชื่อ Custom ที่ต้องการก่อนเพิ่มลงตะกร้า', 'error');
+        return;
+      }
+      const base = custState.withLighter ? Number(prod.priceWithLighter) : Number(prod.priceBase);
+      const nameFee = custState.hasCustomName ? Number(storeConfig.customNameFee || 30) : 0;
+
+      cart.push({
+        cartId: 'c-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        productId: prod.id,
+        productName: prod.name,
+        caseColorName: custState.caseColor.name,
+        caseColorHex: custState.caseColor.hex,
+        withLighter: custState.withLighter,
+        lighterColor: custState.withLighter ? custState.lighterColor.name : '',
+        customName: custState.hasCustomName ? custState.customName.toUpperCase() : '',
+        unitPrice: base + nameFee,
+        qty: custState.qty
+      });
+
+      renderCartUI();
+      closeCustomizer();
+      showToast(`เพิ่ม "${prod.name}" ลงตะกร้าแล้ว`);
+      openCart();
+    };
+
+    // ==================== CART LOGIC ====================
+    window.openCart = function() {
+      document.getElementById('cart-drawer').classList.remove('hidden');
+      renderCartUI();
+    };
+
+    window.closeCart = function() {
+      document.getElementById('cart-drawer').classList.add('hidden');
+    };
+
+    window.updateCartQty = function(idx, delta) {
+      if (!cart[idx]) return;
+      cart[idx].qty += delta;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      renderCartUI();
+    };
+
+    window.removeCartItem = function(idx) {
+      cart.splice(idx, 1);
+      renderCartUI();
+    };
+
+    function getCartTotals() {
+      const subtotal = cart.reduce((sum, it) => sum + it.unitPrice * it.qty, 0);
+      const shipping = cart.length > 0 ? Number(storeConfig.shippingFee || 0) : 0;
+      return { subtotal, shipping, total: subtotal + shipping };
+    }
+
+    function renderCartUI() {
+      const totalQty = cart.reduce((s, it) => s + it.qty, 0);
+      const badge = document.getElementById('cart-badge');
+      if (badge) badge.textContent = totalQty;
+
+      const listEl = document.getElementById('cart-items-container');
+      const { subtotal, shipping, total } = getCartTotals();
+
+      document.getElementById('cart-subtotal').textContent = `฿${subtotal.toLocaleString()}`;
+      document.getElementById('cart-shipping').textContent = `฿${shipping.toLocaleString()}`;
+      document.getElementById('cart-total').textContent = `฿${total.toLocaleString()}`;
+      document.getElementById('btn-go-checkout').disabled = cart.length === 0;
+
+      if (!cart.length) {
+        listEl.innerHTML = `
+          <div class="py-16 text-center space-y-2 text-zinc-500">
+            <i class="fa-solid fa-bag-shopping text-4xl opacity-40"></i>
+            <p class="text-sm font-semibold">ตะกร้าสินค้ายังว่างอยู่</p>
+            <p class="text-xs">เลือกรุ่นและปรับแต่งสีเคสที่ชอบได้เลย</p>
+          </div>`;
+        return;
+      }
+
+      listEl.innerHTML = cart.map((it, idx) => `
+        <div class="p-3.5 rounded-2xl bg-matte-950 border border-matte-border space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="font-bold text-sm text-white">${escapeHtml(it.productName)}</div>
+              <div class="text-xs text-zinc-400 flex items-center gap-1.5 mt-0.5">
+                <span class="w-3 h-3 rounded-full border border-white/25 inline-block" style="background:${it.caseColorHex}"></span>
+                <span>สีเคส: ${escapeHtml(it.caseColorName)}</span>
+              </div>
+              <div class="text-xs text-zinc-400">
+                ${it.withLighter ? `พร้อมไฟแช็คสี${escapeHtml(it.lighterColor)}` : 'เฉพาะเคส'}
+                ${it.customName ? ` • <span class="text-accent font-bold">ชื่อ: "${escapeHtml(it.customName)}"</span>` : ''}
+              </div>
+            </div>
+            <button type="button" onclick="removeCartItem(${idx})" class="text-zinc-500 hover:text-red-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t border-matte-border/60">
+            <div class="inline-flex items-center rounded-lg bg-matte-900 border border-matte-border">
+              <button type="button" onclick="updateCartQty(${idx}, -1)" class="w-7 h-7 text-xs font-bold text-zinc-300 hover:text-white">-</button>
+              <span class="w-7 text-center text-xs font-bold text-white">${it.qty}</span>
+              <button type="button" onclick="updateCartQty(${idx}, 1)" class="w-7 h-7 text-xs font-bold text-zinc-300 hover:text-white">+</button>
+            </div>
+            <span class="font-display font-bold text-accent">฿${(it.unitPrice * it.qty).toLocaleString()}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== CHECKOUT & ORDER SUBMISSION ====================
+    window.openCheckout = function() {
+      if (!cart.length) return;
+      closeCart();
+      const { total } = getCartTotals();
+      document.getElementById('co-total-badge').textContent = `฿${total.toLocaleString()}`;
+      document.getElementById('checkout-form').classList.remove('hidden');
+      document.getElementById('checkout-success-view').classList.add('hidden');
+      uploadedSlipDataUrl = '';
+      document.getElementById('co-slip-status').textContent = 'ยังไม่ได้เลือกไฟล์สลิป';
+      document.getElementById('co-slip-preview').classList.add('hidden');
+
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    window.closeCheckout = function() {
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    window.copyBankAccount = function() {
+      copyTextToClipboard(storeConfig.bankAccount || '', 'คัดลอกเลขที่บัญชีแล้ว');
+    };
+
+    window.handleSlipUpload = async function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        uploadedSlipDataUrl = await compressImageFile(file, 650, 0.7);
+        document.getElementById('co-slip-status').textContent = `แนบสลิปเรียบร้อย (${file.name})`;
+        const prev = document.getElementById('co-slip-preview');
+        prev.src = uploadedSlipDataUrl;
+        prev.classList.remove('hidden');
+        showToast('อัปโหลดสลิปเรียบร้อยแล้ว');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    };
+
+    window.submitOrder = async function(event) {
+      event.preventDefault();
+      if (!cart.length) return;
+      if (!uploadedSlipDataUrl) {
+        showToast('กรุณาแนบสลิปการโอนเงินก่อนยืนยันคำสั่งซื้อ', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-order');
+      btn.disabled = true;
+      btn.textContent = 'กำลังบันทึกคำสั่งซื้อ...';
+
+      const { subtotal, shipping, total } = getCartTotals();
+      const orderCode = 'KK-' + Math.floor(100000 + Math.random() * 900000);
+
+      const orderPayload = {
+        orderCode,
+        createdAt: Date.now(),
+        status: 'รอตรวจสอบสลิป',
+        trackingNumber: '',
+        subtotal,
+        shippingFee: shipping,
+        totalAmount: total,
+        slipDataUrl: uploadedSlipDataUrl,
+        items: cart.map(it => ({ ...it })),
+        customer: {
+          name: document.getElementById('co-name').value.trim(),
+          phone: document.getElementById('co-phone').value.trim(),
+          social: document.getElementById('co-social').value.trim(),
+          address: document.getElementById('co-address').value.trim(),
+          subdistrict: document.getElementById('co-subdistrict').value.trim(),
+          district: document.getElementById('co-district').value.trim(),
+          province: document.getElementById('co-province').value.trim(),
+          zipcode: document.getElementById('co-zipcode').value.trim(),
+          note: document.getElementById('co-note').value.trim()
+        }
+      };
+
+      try {
+        if (db && currentUser) {
+          const ordersCol = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+          await addDoc(ordersCol, orderPayload);
+        } else {
+          orders.unshift({ id: 'local-' + Date.now(), ...orderPayload });
+          saveLocalState();
+          updateOrdersDependentUI();
+        }
+
+        lastCreatedOrderCode = orderCode;
+        const itemLines = orderPayload.items.map(it =>
+          `- ${it.productName} x${it.qty} (สีเคส: ${it.caseColorName}, ${it.withLighter ? 'พร้อมไฟแช็คสี' + it.lighterColor : 'เฉพาะเคส'}${it.customName ? ', ชื่อ: ' + it.customName : ''}) ฿${it.unitPrice * it.qty}`
+        ).join('\n');
+
+        lastOrderSummaryText = `คำสั่งซื้อ KNUCK KNUCK.\nรหัสออเดอร์: ${orderCode}\nผู้รับ: ${orderPayload.customer.name} (${orderPayload.customer.phone})\nที่อยู่: ${orderPayload.customer.address} ต.${orderPayload.customer.subdistrict} อ.${orderPayload.customer.district} จ.${orderPayload.customer.province} ${orderPayload.customer.zipcode}\nรายการ:\n${itemLines}\nยอดสุทธิ: ฿${total}`;
+
+        cart = [];
+        renderCartUI();
+        document.getElementById('checkout-form').reset();
+        document.getElementById('checkout-form').classList.add('hidden');
+        document.getElementById('success-order-code').textContent = orderCode;
+        document.getElementById('checkout-success-view').classList.remove('hidden');
+        showToast('บันทึกคำสั่งซื้อเรียบร้อยแล้ว!');
+      } catch (err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการบันทึกออเดอร์ กรุณาลองใหม่', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'ยืนยันคำสั่งซื้อ & แจ้งชำระเงิน';
+      }
+    };
+
+    window.copyLastOrderSummary = function() {
+      copyTextToClipboard(lastOrderSummaryText, 'คัดลอกสรุปออเดอร์แล้ว');
+    };
+
+    // ==================== CUSTOMER ORDER TRACKING ====================
+    window.openTrackOrderModal = function(prefillQuery = '') {
+      const modal = document.getElementById('track-order-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      const input = document.getElementById('track-query-input');
+      if (prefillQuery) {
+        input.value = prefillQuery;
+        searchCustomerOrders(null, prefillQuery);
+      } else {
+        input.focus();
+      }
+    };
+
+    window.closeTrackOrderModal = function() {
+      const modal = document.getElementById('track-order-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    window.openTrackFromSuccess = function() {
+      closeCheckout();
+      openTrackOrderModal(lastCreatedOrderCode);
+    };
+
+    window.searchCustomerOrders = function(event, directQuery = null) {
+      if (event) event.preventDefault();
+      const raw = (directQuery !== null ? directQuery : document.getElementById('track-query-input').value).trim();
+      const container = document.getElementById('track-results-container');
+      if (!raw) return;
+
+      const normalized = raw.toLowerCase().replace(/[\s-]/g, '');
+      const matched = orders.filter(o => {
+        const codeNorm = (o.orderCode || '').toLowerCase().replace(/[\s-]/g, '');
+        const phoneNorm = (o.customer?.phone || '').toLowerCase().replace(/[\s-]/g, '');
+        return codeNorm === normalized || (normalized.length >= 6 && phoneNorm === normalized);
+      });
+
+      if (!matched.length) {
+        container.innerHTML = `
+          <div class="p-8 rounded-2xl bg-matte-950 border border-matte-border text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-red-500/15 text-red-400 mx-auto flex items-center justify-center text-xl">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+            <p class="text-sm font-bold text-white">ไม่พบคำสั่งซื้อสำหรับ "${escapeHtml(raw)}"</p>
+            <p class="text-xs text-zinc-400">กรุณาตรวจสอบรหัสออเดอร์ (เช่น KK-123456) หรือเบอร์โทรศัพท์ให้ถูกต้อง</p>
+          </div>`;
+        return;
+      }
+
+      const steps = ['รอตรวจสอบสลิป', 'กำลังผลิต Custom', 'จัดส่งแล้ว'];
+
+      container.innerHTML = matched.map(o => {
+        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('th-TH') : '-';
+        const isCancelled = o.status === 'ยกเลิก';
+        const stepIdx = steps.indexOf(o.status);
+
+        const stepperHtml = isCancelled
+          ? `<div class="p-3 rounded-xl bg-red-500/15 border border-red-500/40 text-red-300 text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-ban"></i><span>คำสั่งซื้อนี้ถูกยกเลิก หากมีข้อสงสัยติดต่อร้านทาง IG</span></div>`
+          : `
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              ${steps.map((st, idx) => {
+                const done = idx <= stepIdx;
+                const current = idx === stepIdx;
+                return `
+                  <div class="p-2.5 rounded-xl border text-center transition ${current ? 'bg-accent-soft border-accent text-white' : done ? 'bg-pastel-mint/15 border-pastel-mint/40 text-pastel-mint' : 'bg-matte-900 border-matte-border text-zinc-500'}">
+                    <div class="text-xs font-extrabold mb-0.5">${done ? '<i class="fa-solid fa-check-circle mr-1"></i>' : `${idx + 1}. `}${st}</div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+
+        const trackingBox = o.trackingNumber
+          ? `
+            <div class="p-3.5 rounded-xl bg-pastel-mint/10 border border-pastel-mint/40 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div class="text-[11px] text-pastel-mint font-semibold">เลขพัสดุ (Tracking Number)</div>
+                <div class="font-mono font-extrabold text-base text-white tracking-wider">${escapeHtml(o.trackingNumber)}</div>
+              </div>
+              <button type="button" onclick="copyTextToClipboard('${escapeHtml(o.trackingNumber)}', 'คัดลอกเลขพัสดุแล้ว')" class="px-3.5 py-2 rounded-xl bg-pastel-mint text-[#09090D] font-extrabold text-xs hover:opacity-90 transition">
+                <i class="fa-regular fa-copy mr-1"></i>คัดลอกเลขพัสดุ
+              </button>
+            </div>
+          `
+          : `<div class="text-xs text-zinc-500"><i class="fa-regular fa-clock mr-1"></i>เลขพัสดุจะปรากฏที่นี่ทันทีเมื่อทางร้านจัดส่งสินค้าแล้ว</div>`;
+
+        return `
+          <div class="p-4 sm:p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-matte-border">
+              <div>
+                <div class="font-display font-extrabold text-lg text-accent">${escapeHtml(o.orderCode)}</div>
+                <div class="text-[11px] text-zinc-500">สั่งซื้อเมื่อ: ${escapeHtml(dateStr)}</div>
+              </div>
+              <span class="px-3 py-1 rounded-xl bg-matte-900 border border-matte-border text-xs font-bold text-white">${escapeHtml(o.status)}</span>
+            </div>
+
+            ${stepperHtml}
+            ${trackingBox}
+
+            <div class="space-y-1.5 pt-2 border-t border-matte-border/60">
+              <div class="text-[11px] font-bold text-zinc-400 uppercase">รายการที่สั่ง</div>
+              ${(o.items || []).map(it => `
+                <div class="flex justify-between gap-2 text-xs sm:text-sm">
+                  <div class="text-zinc-200">
+                    <span class="font-bold text-white">${escapeHtml(it.productName)}</span> x${it.qty}
+                    <div class="text-[11px] text-zinc-400">
+                      สีเคส: ${escapeHtml(it.caseColorName)} • ${it.withLighter ? 'พร้อมไฟแช็คสี' + escapeHtml(it.lighterColor) : 'เฉพาะเคส'}${it.customName ? ` • ชื่อ: "${escapeHtml(it.customName)}"` : ''}
+                    </div>
+                  </div>
+                  <span class="font-bold text-accent shrink-0">฿${it.unitPrice * it.qty}</span>
+                </div>
+              `).join('')}
+              <div class="flex justify-between pt-2 border-t border-matte-border/60 text-sm font-bold">
+                <span class="text-zinc-400">ยอดสุทธิ (รวมค่าจัดส่ง ฿${o.shippingFee || 0})</span>
+                <span class="text-accent">฿${o.totalAmount}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    // ==================== SINGLE-OWNER ADMIN AUTH & LOCK ====================
+    function isVerifiedOwner() {
+      if (!db) return ownerUid === 'local-owner';
+      return Boolean(currentUser && ownerUid && currentUser.uid === ownerUid);
+    }
+
+    window.openAdminModal = function() {
+      const modal = document.getElementById('admin-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      refreshAdminGateUI();
+    };
+
+    window.closeAdminModal = function() {
+      const modal = document.getElementById('admin-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    function refreshAdminGateUI() {
+      const statusEl = document.getElementById('admin-auth-status');
+      const gateView = document.getElementById('admin-gate-view');
+      const dashView = document.getElementById('admin-dashboard-view');
+      const gateTitle = document.getElementById('admin-gate-title');
+      const gateDesc = document.getElementById('admin-gate-desc');
+      const claimBtn = document.getElementById('btn-claim-owner');
+
+      if (isVerifiedOwner()) {
+        statusEl.textContent = db ? `เจ้าของร้านยืนยันแล้ว • UID: ${currentUser.uid}` : 'โหมดเจ้าของร้าน (ทดสอบในเครื่อง)';
+        gateView.classList.add('hidden');
+        dashView.classList.remove('hidden');
+        switchAdminTab(activeAdminTab);
+        renderAdminProducts();
+        renderAdminOrders();
+        renderRevenueDashboard();
+        populateSiteEditorForm();
+        return;
+      }
+
+      gateView.classList.remove('hidden');
+      dashView.classList.add('hidden');
+
+      if (!ownerUid) {
+        statusEl.textContent = 'ยังไม่ได้ผูกสิทธิ์เจ้าของร้าน';
+        gateTitle.textContent = 'ผูกสิทธิ์เจ้าของร้าน (เข้าได้คนเดียว)';
+        gateDesc.textContent = 'กดปุ่มด้านล่างเพื่อยืนยันว่าคุณคือเจ้าของร้าน KNUCK KNUCK. ระบบจะล็อกสิทธิ์หลังบ้านไว้เฉพาะบัญชีของคุณคนเดียวเท่านั้น';
+        claimBtn.classList.remove('hidden');
+      } else {
+        statusEl.textContent = 'สิทธิ์ถูกล็อกไว้กับบัญชีเจ้าของร้านอื่นแล้ว';
+        gateTitle.textContent = 'ไม่สามารถเข้าถึงได้';
+        gateDesc.textContent = 'ระบบหลังบ้านนี้ถูกล็อกสิทธิ์ไว้สำหรับเจ้าของร้านเพียงคนเดียวเท่านั้น';
+        claimBtn.classList.add('hidden');
+      }
+    }
+
+    window.claimOwnerAccess = async function() {
+      if (!db) {
+        ownerUid = 'local-owner';
+        saveLocalState();
+        showToast('เข้าสู่ระบบหลังบ้านเจ้าของร้านแล้ว');
+        refreshAdminGateUI();
+        return;
+      }
+      if (!currentUser) {
+        showToast('กำลังเชื่อมต่อระบบยืนยันตัวตน กรุณาลองอีกครั้ง', 'error');
+        return;
+      }
+      try {
+        const metaRef = doc(db, 'artifacts', appId, 'public', 'data', 'store_meta', 'owner');
+        const snap = await getDoc(metaRef);
+        if (!snap.exists()) {
+          await setDoc(metaRef, { ownerUid: currentUser.uid, claimedAt: Date.now() });
+          ownerUid = currentUser.uid;
+          showToast('ผูกสิทธิ์เจ้าของร้านสำเร็จแล้ว!');
+        } else {
+          ownerUid = snap.data().ownerUid;
+        }
+        refreshAdminGateUI();
+      } catch (err) {
+        console.error(err);
+        showToast('ไม่สามารถผูกสิทธิ์ได้: ' + err.message, 'error');
+      }
+    };
+
+    // ==================== ADMIN TABS ====================
+    window.switchAdminTab = function(tab) {
+      activeAdminTab = tab;
+      ['products', 'orders', 'revenue', 'site'].forEach(t => {
+        const panel = document.getElementById(`admin-tab-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (!panel || !btn) return;
+        if (t === tab) {
+          panel.classList.remove('hidden');
+          btn.className = 'px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold border-b-2 border-accent text-accent bg-matte-900 transition whitespace-nowrap';
+        } else {
+          panel.classList.add('hidden');
+          btn.className = 'px-4 py-2.5 rounded-t-xl text-xs sm:text-sm font-bold border-b-2 border-transparent text-zinc-400 hover:text-white transition whitespace-nowrap';
+        }
+      });
+      if (tab === 'revenue') renderRevenueDashboard();
+    };
+
+    // ==================== ADMIN TAB 1: PRODUCTS CRUD ====================
+    function renderAdminProducts() {
+      const list = document.getElementById('admin-products-list');
+      if (!list) return;
+      list.innerHTML = products.map(p => `
+        <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-14 h-14 rounded-xl bg-matte-900 border border-matte-border overflow-hidden shrink-0 flex items-center justify-center">
+              ${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" class="w-full h-full object-cover" />` : `<i class="fa-solid fa-cube text-accent text-xl"></i>`}
+            </div>
+            <div class="min-w-0">
+              <div class="font-bold text-sm text-white truncate">${escapeHtml(p.name)}</div>
+              <div class="text-xs text-accent font-bold">฿${p.priceBase} / พร้อมไฟแช็ค ฿${p.priceWithLighter}</div>
+              <div class="text-[11px] text-zinc-500">${(p.colors || []).length} สี • ทรง 3D: ${escapeHtml(p.style || 'classic')}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="openProductForm('${p.id}')" class="px-3 py-1.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-zinc-200 hover:border-accent hover:text-accent">แก้ไข</button>
+            <button type="button" onclick="deleteProduct('${p.id}')" class="px-3 py-1.5 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-bold text-red-400 hover:bg-red-500 hover:text-white">ลบ</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.openProductForm = function(prodId = null) {
+      const form = document.getElementById('admin-prod-form');
+      form.classList.remove('hidden');
+      if (prodId) {
+        const p = products.find(x => x.id === prodId);
+        if (!p) return;
+        document.getElementById('pf-form-title').textContent = `แก้ไขสินค้า: ${p.name}`;
+        document.getElementById('pf-id').value = p.id;
+        document.getElementById('pf-name').value = p.name;
+        document.getElementById('pf-style').value = p.style || 'classic';
+        document.getElementById('pf-price-base').value = p.priceBase;
+        document.getElementById('pf-price-lighter').value = p.priceWithLighter;
+        document.getElementById('pf-desc').value = p.description || '';
+        document.getElementById('pf-image').value = p.imageUrl || '';
+        prodFormColors = (p.colors || []).map(c => ({ ...c }));
+      } else {
+        document.getElementById('pf-form-title').textContent = 'เพิ่มสินค้าใหม่';
+        document.getElementById('pf-id').value = '';
+        document.getElementById('pf-name').value = '';
+        document.getElementById('pf-style').value = 'classic';
+        document.getElementById('pf-price-base').value = 149;
+        document.getElementById('pf-price-lighter').value = 159;
+        document.getElementById('pf-desc').value = '';
+        document.getElementById('pf-image').value = '';
+        prodFormColors = SIGNATURE_SHADES.slice(0, 5).map(c => ({ ...c }));
+      }
+      renderProdFormColors();
+    };
+
+    window.closeProductForm = function() {
+      document.getElementById('admin-prod-form').classList.add('hidden');
+    };
+
+    function renderProdFormColors() {
+      const wrap = document.getElementById('pf-colors-list');
+      wrap.innerHTML = prodFormColors.map((c, idx) => `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-matte-900 border border-matte-border text-xs text-zinc-200">
+          <span class="w-3 h-3 rounded-full" style="background:${c.hex}"></span>
+          <span>${escapeHtml(c.name)}</span>
+          <button type="button" onclick="removeProdFormColor(${idx})" class="text-zinc-500 hover:text-red-400 ml-1">&times;</button>
+        </span>
+      `).join('');
+    }
+
+    window.addProdFormColor = function() {
+      const hex = document.getElementById('pf-new-color-hex').value;
+      const name = document.getElementById('pf-new-color-name').value.trim();
+      if (!name) { showToast('กรุณากรอกชื่อสี', 'error'); return; }
+      prodFormColors.push({ name, hex });
+      document.getElementById('pf-new-color-name').value = '';
+      renderProdFormColors();
+    };
+
+    window.removeProdFormColor = function(idx) {
+      prodFormColors.splice(idx, 1);
+      renderProdFormColors();
+    };
+
+    window.handleProdImgUpload = async function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const dataUrl = await compressImageFile(file, 640, 0.72);
+        document.getElementById('pf-image').value = dataUrl;
+        showToast('อัปโหลดรูปสินค้าเรียบร้อย');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    };
+
+    window.saveProductForm = async function(event) {
+      event.preventDefault();
+      if (!isVerifiedOwner()) return;
+
+      const id = document.getElementById('pf-id').value;
+      const payload = {
+        name: document.getElementById('pf-name').value.trim(),
+        style: document.getElementById('pf-style').value,
+        priceBase: Number(document.getElementById('pf-price-base').value),
+        priceWithLighter: Number(document.getElementById('pf-price-lighter').value),
+        description: document.getElementById('pf-desc').value.trim(),
+        imageUrl: document.getElementById('pf-image').value.trim(),
+        colors: prodFormColors.length ? prodFormColors : SIGNATURE_SHADES.slice(0, 4)
+      };
+
+      try {
+        if (db && currentUser) {
+          if (id) {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', id), payload, { merge: true });
+          } else {
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'products'), payload);
+          }
+        } else {
+          if (id) {
+            const idx = products.findIndex(p => p.id === id);
+            if (idx >= 0) products[idx] = { id, ...payload };
+          } else {
+            products.push({ id: 'prod-' + Date.now(), ...payload });
+          }
+          saveLocalState();
+          renderProductsGrid();
+          renderAdminProducts();
+        }
+        closeProductForm();
+        showToast('บันทึกสินค้าเรียบร้อยแล้ว');
+      } catch (err) {
+        showToast('บันทึกไม่สำเร็จ: ' + err.message, 'error');
+      }
+    };
+
+    window.deleteProduct = function(prodId) {
+      openConfirmModal('ลบสินค้า', 'ต้องการลบสินค้ารายการนี้ออกจากหน้าร้านใช่หรือไม่?', async () => {
+        try {
+          if (db && currentUser) {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', prodId));
+          } else {
+            products = products.filter(p => p.id !== prodId);
+            saveLocalState();
+            renderProductsGrid();
+            renderAdminProducts();
+          }
+          showToast('ลบสินค้าเรียบร้อย');
+        } catch (err) {
+          showToast('ลบไม่สำเร็จ: ' + err.message, 'error');
+        }
+      });
+    };
+
+    // ==================== ADMIN TAB 2: ORDERS ====================
+    function updateOrdersDependentUI() {
+      const countEl = document.getElementById('admin-order-count');
+      if (countEl) countEl.textContent = orders.length;
+      renderAdminOrders();
+      renderRevenueDashboard();
+    }
+
+    function renderAdminOrders() {
+      const wrap = document.getElementById('admin-orders-list');
+      if (!wrap) return;
+      if (!orders.length) {
+        wrap.innerHTML = '<div class="p-10 rounded-2xl bg-matte-950 border border-matte-border text-center text-sm text-zinc-500">ยังไม่มีคำสั่งซื้อเข้ามา</div>';
+        return;
+      }
+
+      const statuses = ['รอตรวจสอบสลิป', 'กำลังผลิต Custom', 'จัดส่งแล้ว', 'ยกเลิก'];
+
+      wrap.innerHTML = orders.map(o => {
+        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('th-TH') : '-';
+        const c = o.customer || {};
+        const fullAddr = `${c.address || ''} ต.${c.subdistrict || ''} อ.${c.district || ''} จ.${c.province || ''} ${c.zipcode || ''}`;
+        return `
+          <div class="p-4 sm:p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-matte-border">
+              <div>
+                <span class="font-display font-extrabold text-base text-accent">${escapeHtml(o.orderCode)}</span>
+                <span class="text-xs text-zinc-500 ml-2">${escapeHtml(dateStr)}</span>
+              </div>
+              <div class="font-display font-extrabold text-lg text-white">฿${Number(o.totalAmount || 0).toLocaleString()}</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div class="md:col-span-5 space-y-1 text-xs">
+                <div class="font-bold text-white text-sm">${escapeHtml(c.name)} (${escapeHtml(c.phone)})</div>
+                ${c.social ? `<div class="text-accent">IG/Line: ${escapeHtml(c.social)}</div>` : ''}
+                <div class="text-zinc-300 leading-relaxed">${escapeHtml(fullAddr)}</div>
+                ${c.note ? `<div class="text-pastel-peach">หมายเหตุ: ${escapeHtml(c.note)}</div>` : ''}
+              </div>
+
+              <div class="md:col-span-5 space-y-1.5 text-xs">
+                ${(o.items || []).map(it => `
+                  <div class="p-2 rounded-xl bg-matte-900 border border-matte-border">
+                    <div class="font-bold text-white">${escapeHtml(it.productName)} x${it.qty} (฿${it.unitPrice * it.qty})</div>
+                    <div class="text-zinc-400">สีเคส: ${escapeHtml(it.caseColorName)} • ${it.withLighter ? 'พร้อมไฟแช็คสี' + escapeHtml(it.lighterColor) : 'เฉพาะเคส'}${it.customName ? ` • ชื่อ: "${escapeHtml(it.customName)}"` : ''}</div>
+                  </div>
+                `).join('')}
+              </div>
+
+              <div class="md:col-span-2 flex md:justify-end">
+                ${o.slipDataUrl
+                  ? `<img src="${o.slipDataUrl}" onclick="openLightbox('${o.slipDataUrl}')" title="คลิกเพื่อขยายสลิป" class="w-20 h-24 rounded-xl object-cover border border-matte-border cursor-pointer hover:border-accent" />`
+                  : `<span class="text-xs text-zinc-500">ไม่มีสลิป</span>`
+                }
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 pt-3 border-t border-matte-border/60">
+              <select id="ord-st-${o.id}" class="px-3 py-2 rounded-xl bg-matte-900 border border-matte-border text-xs font-bold text-white focus:border-accent focus:outline-none">
+                ${statuses.map(st => `<option value="${st}" ${o.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+              </select>
+              <input id="ord-trk-${o.id}" type="text" value="${escapeHtml(o.trackingNumber || '')}" placeholder="กรอกเลขพัสดุ (เช่น TH123456...)" class="flex-1 min-w-[180px] px-3 py-2 rounded-xl bg-matte-900 border border-matte-border text-xs text-white focus:border-accent focus:outline-none" />
+              <button type="button" onclick="updateOrderStatus('${o.id}')" class="px-4 py-2 rounded-xl accent-gradient-bg text-[#09090D] font-extrabold text-xs hover:opacity-95 transition">บันทึกสถานะ</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.updateOrderStatus = async function(orderId) {
+      if (!isVerifiedOwner()) return;
+      const status = document.getElementById(`ord-st-${orderId}`).value;
+      const trackingNumber = document.getElementById(`ord-trk-${orderId}`).value.trim();
+      try {
+        if (db && currentUser) {
+          await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId), { status, trackingNumber });
+        } else {
+          const ord = orders.find(o => o.id === orderId);
+          if (ord) { ord.status = status; ord.trackingNumber = trackingNumber; }
+          saveLocalState();
+          updateOrdersDependentUI();
+        }
+        showToast('อัปเดตสถานะและเลขพัสดุเรียบร้อย');
+      } catch (err) {
+        showToast('อัปเดตไม่สำเร็จ: ' + err.message, 'error');
+      }
+    };
+
+    // ==================== ADMIN TAB 3: MONTHLY REVENUE DASHBOARD ====================
+    const THAI_MONTHS_SHORT = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    const THAI_MONTHS_FULL = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+
+    window.renderRevenueDashboard = function() {
+      const yearSelect = document.getElementById('rev-year-select');
+      const chartEl = document.getElementById('rev-monthly-chart');
+      const tableEl = document.getElementById('rev-monthly-table');
+      if (!yearSelect || !chartEl || !tableEl) return;
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+
+      const yearSet = new Set([currentYear]);
+      orders.forEach(o => {
+        if (o.createdAt) yearSet.add(new Date(o.createdAt).getFullYear());
+      });
+      const years = Array.from(yearSet).sort((a, b) => b - a);
+
+      const prevSelected = Number(yearSelect.value) || currentYear;
+      yearSelect.innerHTML = years.map(y => `<option value="${y}" ${y === prevSelected ? 'selected' : ''}>${y} (พ.ศ. ${y + 543})</option>`).join('');
+      const selectedYear = Number(yearSelect.value) || currentYear;
+      document.getElementById('rev-chart-year-badge').textContent = `${selectedYear} (พ.ศ. ${selectedYear + 543})`;
+
+      const validOrders = orders.filter(o => o.status !== 'ยกเลิก');
+      const pendingOrders = orders.filter(o => o.status === 'รอตรวจสอบสลิป' || o.status === 'กำลังผลิต Custom');
+
+      const allTimeRevenue = validOrders.reduce((s, o) => s + Number(o.totalAmount || 0), 0);
+      const avgOrder = validOrders.length ? Math.round(allTimeRevenue / validOrders.length) : 0;
+
+      let thisMonthRev = 0;
+      let thisMonthCount = 0;
+      const buckets = Array.from({ length: 12 }, () => ({ count: 0, subtotal: 0, shipping: 0, total: 0 }));
+
+      validOrders.forEach(o => {
+        const d = o.createdAt ? new Date(o.createdAt) : now;
+        const y = d.getFullYear();
+        const m = d.getMonth();
+        const total = Number(o.totalAmount || 0);
+        const ship = Number(o.shippingFee || 0);
+        const sub = o.subtotal !== undefined ? Number(o.subtotal) : Math.max(0, total - ship);
+
+        if (y === currentYear && m === currentMonth) {
+          thisMonthRev += total;
+          thisMonthCount += 1;
+        }
+        if (y === selectedYear) {
+          buckets[m].count += 1;
+          buckets[m].subtotal += sub;
+          buckets[m].shipping += ship;
+          buckets[m].total += total;
+        }
+      });
+
+      const yearTotalRev = buckets.reduce((s, b) => s + b.total, 0);
+      const yearTotalCount = buckets.reduce((s, b) => s + b.count, 0);
+
+      document.getElementById('rev-kpi-this-month').textContent = `฿${thisMonthRev.toLocaleString()}`;
+      document.getElementById('rev-kpi-this-month-sub').textContent = `${THAI_MONTHS_SHORT[currentMonth]} ${currentYear} • ${thisMonthCount} ออเดอร์`;
+      document.getElementById('rev-kpi-year-total').textContent = `฿${yearTotalRev.toLocaleString()}`;
+      document.getElementById('rev-kpi-year-orders').textContent = `${yearTotalCount} ออเดอร์ที่ยืนยัน`;
+      document.getElementById('rev-kpi-all-time').textContent = `฿${allTimeRevenue.toLocaleString()}`;
+      document.getElementById('rev-kpi-avg-order').textContent = `เฉลี่ย ฿${avgOrder.toLocaleString()} / ออเดอร์`;
+      document.getElementById('rev-kpi-pending').textContent = pendingOrders.length;
+
+      const maxVal = Math.max(1, ...buckets.map(b => b.total));
+      chartEl.innerHTML = buckets.map((b, idx) => {
+        const pct = b.total > 0 ? Math.max(8, Math.round((b.total / maxVal) * 100)) : 3;
+        const isCurrent = selectedYear === currentYear && idx === currentMonth;
+        return `
+          <div class="flex flex-col items-center justify-end h-full gap-1.5">
+            <div class="text-[9px] sm:text-[10px] font-mono font-bold ${b.total > 0 ? 'text-accent' : 'text-zinc-600'} truncate max-w-full">
+              ${b.total > 0 ? '฿' + (b.total >= 1000 ? (b.total / 1000).toFixed(1) + 'k' : b.total) : '-'}
+            </div>
+            <div class="w-full flex-1 flex items-end">
+              <div title="${THAI_MONTHS_FULL[idx]}: ฿${b.total.toLocaleString()} (${b.count} ออเดอร์)"
+                   class="w-full rounded-t-lg transition-all duration-500 ${b.total > 0 ? 'accent-gradient-bg' : 'bg-matte-800'} ${isCurrent ? 'ring-2 ring-white/70' : ''}"
+                   style="height: ${pct}%"></div>
+            </div>
+            <div class="text-[10px] font-bold ${isCurrent ? 'text-white' : 'text-zinc-500'}">${THAI_MONTHS_SHORT[idx]}</div>
+          </div>
+        `;
+      }).join('');
+
+      tableEl.innerHTML = buckets.map((b, idx) => {
+        const isCurrent = selectedYear === currentYear && idx === currentMonth;
+        return `
+          <tr class="${isCurrent ? 'bg-accent-soft/40' : 'hover:bg-matte-900/50'} transition">
+            <td class="px-4 py-3 font-semibold text-white">
+              ${THAI_MONTHS_FULL[idx]}
+              ${isCurrent ? '<span class="ml-1.5 text-[10px] px-2 py-0.5 rounded-full bg-accent text-[#09090D] font-bold">เดือนนี้</span>' : ''}
+            </td>
+            <td class="px-4 py-3 text-right text-zinc-300">${b.count}</td>
+            <td class="px-4 py-3 text-right text-zinc-300">฿${b.subtotal.toLocaleString()}</td>
+            <td class="px-4 py-3 text-right text-zinc-400">฿${b.shipping.toLocaleString()}</td>
+            <td class="px-4 py-3 text-right font-display font-bold ${b.total > 0 ? 'text-accent' : 'text-zinc-600'}">฿${b.total.toLocaleString()}</td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    // ==================== ADMIN TAB 4: SITE & GALLERY CMS ====================
+    function renderAccentPresetButtons(activeKey) {
+      document.getElementById('sf-accent-key').value = activeKey;
+      const wrap = document.getElementById('sf-accent-presets');
+      wrap.innerHTML = Object.entries(ACCENT_PRESETS).map(([key, p]) => `
+        <button type="button" onclick="selectSiteAccent('${key}')"
+          class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold transition ${key === activeKey ? 'border-white bg-matte-800 text-white' : 'border-matte-border bg-matte-900 text-zinc-400'}">
+          <span class="w-4 h-4 rounded-full" style="background:${p.hex}"></span>
+          <span>${p.label}</span>
+        </button>
+      `).join('');
+    }
+
+    window.selectSiteAccent = function(key) {
+      renderAccentPresetButtons(key);
+      applyAccentTheme(key);
+    };
+
+    function populateSiteEditorForm() {
+      const c = storeConfig;
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
+      renderAccentPresetButtons(c.accentPreset || 'pink');
+      setVal('sf-store-name', c.storeName);
+      setVal('sf-ig-url', c.instagramUrl);
+      setVal('sf-announcement', c.announcement);
+      setVal('sf-hero-badge', c.heroBadge);
+      setVal('sf-hero-title', c.heroTitle);
+      setVal('sf-hero-subtitle', c.heroSubtitle);
+      setVal('sf-hero-image', c.heroImage);
+      setVal('sf-favicon-url', c.faviconUrl || '');
+      setVal('sf-gallery-title', c.galleryTitle || 'ภาพผลงานจริง & แกลเลอรีร้าน');
+      setVal('sf-about-title', c.aboutTitle);
+      setVal('sf-about-content', c.aboutContent);
+      setVal('sf-custom-fee', c.customNameFee);
+      setVal('sf-shipping-fee', c.shippingFee);
+      setVal('sf-bank-name', c.bankName);
+      setVal('sf-bank-acc', c.bankAccount);
+      setVal('sf-bank-holder', c.bankHolder);
+      setVal('sf-qr-image', c.paymentQrUrl);
+
+      siteFormGallery = Array.isArray(c.galleryImages) ? c.galleryImages.map(g => ({ ...g })) : [];
+      renderSiteFormGallery();
+      updateSiteImgPreviews();
+    }
+
+    window.updateSiteImgPreviews = function() {
+      const heroVal = document.getElementById('sf-hero-image')?.value.trim();
+      const heroImg = document.getElementById('sf-hero-img-preview');
+      if (heroImg) {
+        if (heroVal) { heroImg.src = heroVal; heroImg.classList.remove('hidden'); }
+        else { heroImg.classList.add('hidden'); }
+      }
+      const qrVal = document.getElementById('sf-qr-image')?.value.trim();
+      const qrImg = document.getElementById('sf-qr-img-preview');
+      if (qrImg) {
+        if (qrVal) { qrImg.src = qrVal; qrImg.classList.remove('hidden'); }
+        else { qrImg.classList.add('hidden'); }
+      }
+    };
+
+    function renderSiteFormGallery() {
+      const listEl = document.getElementById('sf-gallery-list');
+      const countEl = document.getElementById('sf-gallery-count');
+      if (!listEl) return;
+      if (countEl) countEl.textContent = `${siteFormGallery.length} รูป`;
+
+      if (!siteFormGallery.length) {
+        listEl.innerHTML = '<p class="col-span-full text-xs text-zinc-500 text-center py-4">ยังไม่มีรูปในแกลเลอรี กดปุ่มอัปโหลดรูปด้านบนเพื่อเพิ่มได้เลย</p>';
+        return;
+      }
+
+      listEl.innerHTML = siteFormGallery.map((g, idx) => `
+        <div class="relative group rounded-xl overflow-hidden bg-matte-900 border border-matte-border">
+          <img src="${escapeHtml(g.imageUrl)}" alt="" class="w-full h-28 object-cover" />
+          <button type="button" onclick="removeGalleryImage(${idx})" title="ลบรูปนี้" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-lg bg-red-500/90 hover:bg-red-600 text-white text-xs flex items-center justify-center shadow">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+          <div class="p-2 text-[11px] text-zinc-300 truncate">${escapeHtml(g.caption || 'ไม่มีคำบรรยาย')}</div>
+        </div>
+      `).join('');
+    }
+
+    window.handleGalleryImgUpload = async function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (siteFormGallery.length >= 12) {
+        showToast('เพิ่มรูปในแกลเลอรีได้สูงสุด 12 รูป', 'error');
+        return;
+      }
+      try {
+        const dataUrl = await compressImageFile(file, 560, 0.7);
+        const caption = document.getElementById('sf-gal-caption').value.trim();
+        siteFormGallery.push({ id: 'gal-' + Date.now(), imageUrl: dataUrl, caption });
+        document.getElementById('sf-gal-caption').value = '';
+        event.target.value = '';
+        renderSiteFormGallery();
+        showToast('เพิ่มรูปลงแกลเลอรีแล้ว อย่าลืมกดปุ่มบันทึกการตั้งค่าด้านล่าง');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    };
+
+    window.addGalleryImageByUrl = function() {
+      const urlInput = document.getElementById('sf-gal-url');
+      const capInput = document.getElementById('sf-gal-caption');
+      const url = urlInput.value.trim();
+      if (!url) { showToast('กรุณาวางลิงก์รูปภาพก่อนกดเพิ่ม', 'error'); return; }
+      if (siteFormGallery.length >= 12) { showToast('เพิ่มรูปในแกลเลอรีได้สูงสุด 12 รูป', 'error'); return; }
+      siteFormGallery.push({ id: 'gal-' + Date.now(), imageUrl: url, caption: capInput.value.trim() });
+      urlInput.value = '';
+      capInput.value = '';
+      renderSiteFormGallery();
+      showToast('เพิ่มรูปจากลิงก์แล้ว กดบันทึกการตั้งค่าเพื่อแสดงบนหน้าเว็บ');
+    };
+
+    window.removeGalleryImage = function(idx) {
+      siteFormGallery.splice(idx, 1);
+      renderSiteFormGallery();
+    };
+
+    window.handleSiteImgUpload = async function(event, targetInputId) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const dataUrl = await compressImageFile(file, 720, 0.75);
+        document.getElementById(targetInputId).value = dataUrl;
+        updateSiteImgPreviews();
+        showToast('อัปโหลดรูปภาพเรียบร้อย กดบันทึกเพื่อใช้งาน');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    };
+
+    window.saveSiteSettings = async function(event) {
+      event.preventDefault();
+      if (!isVerifiedOwner()) return;
+
+      const updatedConfig = {
+        ...storeConfig,
+        accentPreset: document.getElementById('sf-accent-key').value || 'pink',
+        storeName: document.getElementById('sf-store-name').value.trim(),
+        instagramUrl: document.getElementById('sf-ig-url').value.trim(),
+        announcement: document.getElementById('sf-announcement').value.trim(),
+        heroBadge: document.getElementById('sf-hero-badge').value.trim(),
+        heroTitle: document.getElementById('sf-hero-title').value.trim(),
+        heroSubtitle: document.getElementById('sf-hero-subtitle').value.trim(),
+        heroImage: document.getElementById('sf-hero-image').value.trim(),
+        faviconUrl: document.getElementById('sf-favicon-url').value.trim(),
+        galleryTitle: document.getElementById('sf-gallery-title').value.trim() || 'ภาพผลงานจริง & แกลเลอรีร้าน',
+        galleryImages: siteFormGallery,
+        aboutTitle: document.getElementById('sf-about-title').value.trim(),
+        aboutContent: document.getElementById('sf-about-content').value.trim(),
+        customNameFee: Number(document.getElementById('sf-custom-fee').value || 30),
+        shippingFee: Number(document.getElementById('sf-shipping-fee').value || 0),
+        bankName: document.getElementById('sf-bank-name').value.trim(),
+        bankAccount: document.getElementById('sf-bank-acc').value.trim(),
+        bankHolder: document.getElementById('sf-bank-holder').value.trim(),
+        paymentQrUrl: document.getElementById('sf-qr-image').value.trim()
+      };
+
+      try {
+        storeConfig = updatedConfig;
+        applyStoreConfigToUI();
+        saveLocalState();
+        if (db && currentUser) {
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'store_meta', 'config'), updatedConfig, { merge: true });
+        }
+        showToast('บันทึกการตั้งค่าหน้าเว็บและรูปภาพเรียบร้อยแล้ว!');
+      } catch (err) {
+        showToast('บันทึกไม่สำเร็จ: ' + err.message, 'error');
+      }
+    };
+
+    // ==================== FIREBASE INITIALIZATION & LIVE SYNC ====================
+    async function initFirebase() {
+      const rawCfg = (typeof __firebase_config !== 'undefined' && __firebase_config)
+        ? __firebase_config
+        : (MANUAL_FIREBASE_CONFIG ? JSON.stringify(MANUAL_FIREBASE_CONFIG) : null);
+      if (!rawCfg) return;
+      try {
+        const firebaseConfig = JSON.parse(rawCfg);
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        // RULE 3: Auth BEFORE queries
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          const cred = await signInWithCustomToken(auth, __initial_auth_token);
+          currentUser = cred.user;
+        } else {
+          const cred = await signInAnonymously(auth);
+          currentUser = cred.user;
+        }
+
+        if (!currentUser) return;
+
+        // Owner lock metadata
+        const ownerRef = doc(db, 'artifacts', appId, 'public', 'data', 'store_meta', 'owner');
+        onSnapshot(ownerRef, (snap) => {
+          ownerUid = snap.exists() ? snap.data().ownerUid : null;
+        }, (err) => console.error('Owner meta error:', err));
+
+        // Store config
+        const cfgRef = doc(db, 'artifacts', appId, 'public', 'data', 'store_meta', 'config');
+        onSnapshot(cfgRef, (snap) => {
+          if (snap.exists()) {
+            storeConfig = { ...DEFAULT_CONFIG, ...snap.data() };
+            applyStoreConfigToUI();
+          }
+        }, (err) => console.error('Config error:', err));
+
+        // Products collection (RULE 1 & 2)
+        const prodsCol = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+        onSnapshot(prodsCol, (snap) => {
+          if (!snap.empty) {
+            products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderProductsGrid();
+            renderAdminProducts();
+          }
+        }, (err) => console.error('Products error:', err));
+
+        // Orders collection (RULE 1 & 2)
+        const ordersCol = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+        onSnapshot(ordersCol, (snap) => {
+          orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          updateOrdersDependentUI();
+        }, (err) => console.error('Orders error:', err));
+      } catch (err) {
+        console.warn('Running in offline preview mode:', err);
+      }
+    }
+
+    // ==================== BOOTSTRAP ====================
+    function bootstrapApp() {
+      loadLocalState();
+      applyStoreConfigToUI();
+      renderHeroShadeSwatches();
+      renderProductsGrid();
+      renderCartUI();
+      updateOrdersDependentUI();
+      const heroContainer = document.getElementById('hero-3d-container');
+      if (heroContainer && typeof THREE !== 'undefined') {
+        try {
+          heroViewer = new Knuck3DViewer(heroContainer, {
+            caseHex: SIGNATURE_SHADES[heroShadeIdx].hex,
+            style: heroStyle,
+            withLighter: true,
+            lighterHex: '#FB8C00',
+            customName: 'KNUCK'
+          });
+        } catch (e) {
+          console.error('3D Viewer init error:', e);
+        }
+      }
+
+      initFirebase();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrapApp);
+    } else {
+      bootstrapApp();
+    }
+  </script>
+</body>
+</html>
