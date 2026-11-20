@@ -309,9 +309,9 @@
   <section id="shades" class="border-y border-matte-border bg-matte-900/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
       <div class="text-center max-w-2xl mx-auto mb-8">
-        <span class="text-xs font-bold tracking-[0.24em] uppercase text-accent">PICK YOUR SHADE</span>
-        <h2 class="font-display font-bold text-2xl sm:text-3xl text-white mt-1">10 เฉดสีเคสสุดเท่ แมตช์ได้ทุกลุค</h2>
-        <p class="text-sm text-zinc-400 mt-1">ตั้งแต่โทนดำด้านคลาสสิกไปจนถึงพาสเทลละมุน เลือกจับคู่กับไฟแช็ค 5 สีได้ตามใจ</p>
+       <span id="shades-badge" class="text-xs font-bold tracking-[0.24em] uppercase text-accent">PICK YOUR SHADE</span>
+        <h2 id="shades-title" class="font-display font-bold text-2xl sm:text-3xl text-white mt-1">10 เฉดสีเคสสุดเท่ แมตช์ได้ทุกลุค</h2>
+        <p id="shades-subtitle" class="text-sm text-zinc-400 mt-1">ตั้งแต่โทนดำด้านคลาสสิกไปจนถึงพาสเทลละมุน เลือกจับคู่กับไฟแช็ค 5 สีได้ตามใจ</p>
       </div>
       <div id="shades-showcase" class="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4"></div>
     </div>
@@ -1041,7 +1041,33 @@
                   </div>
                 </div>
               </div>
-
+<!-- Shades Section Editor -->
+              <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h4 class="font-bold text-sm text-white">แก้ไขส่วนเฉดสี (PICK YOUR SHADE)</h4>
+                    <p class="text-xs text-zinc-400">แก้คำพูดหัวข้อ และเพิ่ม/ลบ/เปลี่ยนสีเคสที่โชว์หน้าเว็บได้อิสระ</p>
+                  </div>
+                  <button type="button" onclick="addDraftShade()" class="px-3.5 py-2 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-accent hover:border-accent">
+                    <i class="fa-solid fa-plus mr-1"></i>เพิ่มเฉดสีใหม่
+                  </button>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ข้อความแท็กด้านบน</label>
+                    <input id="sf-shades-badge" type="text" placeholder="PICK YOUR SHADE" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">หัวข้อหลักส่วนเฉดสี</label>
+                    <input id="sf-shades-title" type="text" placeholder="10 เฉดสีเคสสุดเท่ แมตช์ได้ทุกลุค" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">คำอธิบายรองส่วนเฉดสี</label>
+                    <input id="sf-shades-subtitle" type="text" placeholder="ตั้งแต่โทนดำด้านคลาสสิกไปจนถึงพาสเทลละมุน..." class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                </div>
+                <div id="admin-shades-list" class="grid sm:grid-cols-2 gap-2.5 pt-2"></div>
+              </div>
               <!-- Shop Gallery Manager -->
               <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -1162,7 +1188,11 @@
       accountName: 'KNUCK KNUCK STUDIO',
       accountNumber: '123-4-56789-0',
       qrCodeUrl: '',
-      gallery: []
+      gallery: [],
+      shadesBadge: 'PICK YOUR SHADE',
+      shadesTitle: '10 เฉดสีเคสสุดเท่ แมตช์ได้ทุกลุค',
+      shadesSubtitle: 'ตั้งแต่โทนดำด้านคลาสสิกไปจนถึงพาสเทลละมุน เลือกจับคู่กับไฟแช็ค 5 สีได้ตามใจ',
+      shades: CASE_SHADES.map(s => ({ ...s }))
     };
 
     const DEFAULT_PRODUCTS = [
@@ -1223,6 +1253,10 @@
     let orders = [];
     let cart = [];
     let draftGallery = [];
+    let draftShades = [];
+    function getActiveShades() {
+      return (Array.isArray(siteConfig.shades) && siteConfig.shades.length) ? siteConfig.shades : CASE_SHADES;
+    }
     let firestoreProductsEmpty = true;
     let draftProductShades = CASE_SHADES.map(s => ({ ...s, enabled: true }));
     let activeAdminTab = 'products';
@@ -2109,7 +2143,10 @@
           qrImg.classList.add('hidden');
         }
       }
-
+document.getElementById('shades-badge').textContent = siteConfig.shadesBadge || 'PICK YOUR SHADE';
+      document.getElementById('shades-title').textContent = siteConfig.shadesTitle || '10 เฉดสีเคสสุดเท่ แมตช์ได้ทุกลุค';
+      document.getElementById('shades-subtitle').textContent = siteConfig.shadesSubtitle || '';
+      renderShadesShowcase();
       renderGallery();
       renderCart();
     }
@@ -2187,18 +2224,28 @@
     };
 
     function renderShadesShowcase() {
+      const shades = getActiveShades();
       const wrap = document.getElementById('shades-showcase');
-      if (!wrap) return;
-      wrap.innerHTML = CASE_SHADES.map((s) => `
-        <button type="button" onclick="setHero3DColor('${s.hex}'); document.getElementById('top').scrollIntoView({behavior:'smooth'});"
-          class="matte-card rounded-2xl p-3.5 flex items-center gap-3 hover:border-accent transition text-left group">
-          <span class="w-9 h-9 rounded-xl border border-white/20 shadow-inner flex-shrink-0 group-hover:scale-105 transition" style="background:${s.hex}"></span>
-          <div class="min-w-0">
-            <div class="text-xs font-bold text-white truncate">${s.name}</div>
-            <div class="text-[10px] text-zinc-500">แตะดูบน 3D</div>
-          </div>
-        </button>
-      `).join('');
+      if (wrap) {
+        wrap.innerHTML = shades.map((s) => `
+          <button type="button" onclick="setHero3DColor('${s.hex}'); document.getElementById('top').scrollIntoView({behavior:'smooth'});"
+            class="matte-card rounded-2xl p-3.5 flex items-center gap-3 hover:border-accent transition text-left group">
+            <span class="w-9 h-9 rounded-xl border border-white/20 shadow-inner flex-shrink-0 group-hover:scale-105 transition" style="background:${s.hex}"></span>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-white truncate">${escapeHtml(s.name)}</div>
+              <div class="text-[10px] text-zinc-500">แตะดูบน 3D</div>
+            </div>
+          </button>
+        `).join('');
+      }
+      const dots = document.getElementById('hero-color-dots');
+      if (dots) {
+        dots.innerHTML = shades.map((s) => `
+          <button type="button" title="${escapeHtml(s.name)}" onclick="setHero3DColor('${s.hex}')"
+            class="w-5 h-5 rounded-full border-2 border-white/25 hover:scale-110 transition shadow"
+            style="background:${s.hex}"></button>
+        `).join('');
+      }
     }
 
     function renderGallery() {
@@ -3464,6 +3511,11 @@
 
       selectedThemeDraft = siteConfig.themePreset || 'pink-blue';
       draftGallery = Array.isArray(siteConfig.gallery) ? siteConfig.gallery.map(x => ({ ...x })) : [];
+      document.getElementById('sf-shades-badge').value = siteConfig.shadesBadge || 'PICK YOUR SHADE';
+      document.getElementById('sf-shades-title').value = siteConfig.shadesTitle || '10 เฉดสีเคสสุดเท่ แมตช์ได้ทุกลุค';
+      document.getElementById('sf-shades-subtitle').value = siteConfig.shadesSubtitle || '';
+      draftShades = getActiveShades().map(s => ({ ...s }));
+      renderAdminShadesList();
       renderThemePresetButtons();
       renderAdminGalleryList();
       updateSiteImgPreviews();
@@ -3575,7 +3627,35 @@
     window.updateDraftGalleryCaption = (idx, val) => {
       if (draftGallery[idx]) draftGallery[idx].caption = val.trim();
     };
+function renderAdminShadesList() {
+      const wrap = document.getElementById('admin-shades-list');
+      if (!wrap) return;
+      wrap.innerHTML = draftShades.map((s, idx) => `
+        <div class="flex items-center gap-2 p-2.5 rounded-xl bg-matte-900 border border-matte-border">
+          <input type="color" value="${s.hex}" onchange="updateDraftShade(${idx}, 'hex', this.value)" class="w-9 h-9 rounded-lg bg-transparent border border-matte-border cursor-pointer flex-shrink-0" />
+          <input type="text" value="${escapeHtml(s.name)}" oninput="updateDraftShade(${idx}, 'name', this.value)" placeholder="ชื่อสี..." class="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg bg-matte-950 border border-matte-border text-xs text-white focus:border-accent focus:outline-none" />
+          <button type="button" onclick="removeDraftShade(${idx})" class="w-8 h-8 rounded-lg bg-red-500/15 text-red-300 hover:bg-red-500 hover:text-white text-xs flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      `).join('');
+    }
 
+    window.updateDraftShade = (idx, field, val) => {
+      if (draftShades[idx]) draftShades[idx][field] = val;
+    };
+
+    window.addDraftShade = () => {
+      draftShades.push({ id: 'shade_' + Date.now(), name: 'New Shade', hex: '#F9A8D4' });
+      renderAdminShadesList();
+    };
+
+    window.removeDraftShade = (idx) => {
+      if (draftShades.length <= 1) {
+        showToast('ต้องมีอย่างน้อย 1 เฉดสี', 'error');
+        return;
+      }
+      draftShades.splice(idx, 1);
+      renderAdminShadesList();
+    };
     window.saveSiteConfig = async function(event) {
       event.preventDefault();
       if (!isVerifiedOwner()) return;
@@ -3597,7 +3677,11 @@
         accountName: document.getElementById('sf-account-name').value.trim(),
         accountNumber: document.getElementById('sf-account-number').value.trim(),
         qrCodeUrl: document.getElementById('sf-qr-url').value.trim(),
-        gallery: draftGallery
+        gallery: draftGallery,
+        shadesBadge: document.getElementById('sf-shades-badge').value.trim() || 'PICK YOUR SHADE',
+        shadesTitle: document.getElementById('sf-shades-title').value.trim() || '10 เฉดสีเคสสุดเท่ แมตช์ได้ทุกลุค',
+        shadesSubtitle: document.getElementById('sf-shades-subtitle').value.trim(),
+        shades: draftShades.filter(s => s.name.trim()).map(s => ({ id: s.id || ('shade_' + Date.now()), name: s.name.trim(), hex: s.hex }))
       };
 
       try {
