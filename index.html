@@ -1015,12 +1015,19 @@
   <!-- ==================== MAIN APPLICATION SCRIPT ==================== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // ==================== GITHUB PAGES STANDALONE CONFIG ====================
-    // วาง firebaseConfig ที่ได้จาก console.firebase.google.com แทนค่า null ด้านล่างนี้เพื่อใช้งานขายจริงออนไลน์
-    const MANUAL_FIREBASE_CONFIG = null;
+    const MANUAL_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDdVbIOeuXrfj7LQlQaZqksV8lOcJapMTQ",
+      authDomain: "knuckknuck-shop.firebaseapp.com",
+      projectId: "knuckknuck-shop",
+      storageBucket: "knuckknuck-shop.firebasestorage.app",
+      messagingSenderId: "95369159136",
+      appId: "1:95369159136:web:a83b9c74ccde46bc7f4b85",
+      measurementId: "G-2511PH2K07"
+    };
 
     const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'knuckknuck-shop';
     let firebaseConfig = MANUAL_FIREBASE_CONFIG;
@@ -3285,13 +3292,29 @@
         auth = getAuth(app);
         db = getFirestore(app);
 
-        if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
-          const cred = await signInWithCustomToken(auth, window.__initial_auth_token);
-          currentUser = cred.user;
-        } else {
-          const cred = await signInAnonymously(auth);
-          currentUser = cred.user;
-        }
+        await new Promise((resolve) => {
+          let resolved = false;
+          onAuthStateChanged(auth, async (user) => {
+            if (user) {
+              currentUser = user;
+              if (!document.getElementById('admin-modal').classList.contains('hidden')) {
+                refreshAdminGateUI();
+              }
+              if (!resolved) { resolved = true; resolve(); }
+            } else {
+              try {
+                if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
+                  await signInWithCustomToken(auth, window.__initial_auth_token);
+                } else {
+                  await signInAnonymously(auth);
+                }
+              } catch (authErr) {
+                console.warn('Auth init error:', authErr);
+                if (!resolved) { resolved = true; resolve(); }
+              }
+            }
+          });
+        });
 
         // Listen to Owner Meta
         onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'store_meta', 'owner'), (snap) => {
