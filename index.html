@@ -369,7 +369,7 @@
       <div class="grid lg:grid-cols-12 overflow-y-auto flex-1">
         <!-- Left 3D Preview -->
         <div class="lg:col-span-6 p-4 sm:p-6 bg-matte-950/60 border-b lg:border-b-0 lg:border-r border-matte-border flex flex-col">
-          <div class="flex items-center justify-between gap-2 mb-3">
+          <div id="cust-3d-toolbar" class="flex items-center justify-between gap-2 mb-3">
             <span class="text-xs font-semibold text-zinc-400"><i class="fa-solid fa-arrows-rotate text-accent mr-1"></i>ลากหมุน 360° / ซูมได้</span>
             <div class="flex items-center gap-1.5">
               <button type="button" onclick="setCust3DView('front')" class="px-2.5 py-1 rounded-lg bg-matte-800 border border-matte-border text-[11px] font-semibold text-zinc-200 hover:border-accent">ด้านหน้า (ชื่อ Custom)</button>
@@ -378,13 +378,16 @@
           </div>
 
           <div id="cust-3d-canvas" class="viewer-canvas-wrap w-full h-[300px] sm:h-[380px] rounded-2xl bg-gradient-to-b from-[#161624] to-[#0B0B11] border border-matte-border relative overflow-hidden"></div>
+          <div id="cust-static-image-wrap" class="hidden w-full h-[300px] sm:h-[380px] rounded-2xl bg-gradient-to-b from-[#161624] to-[#0B0B11] border border-matte-border overflow-hidden items-center justify-center p-4">
+            <img id="cust-static-image" src="" alt="Product Preview" class="max-w-full max-h-full object-contain rounded-xl" />
+          </div>
 
           <div class="mt-3 flex items-center justify-between text-xs text-zinc-400">
             <div>
               <div id="cust-preview-caption">สีเคส: Matte Black</div>
-              <div class="text-[10px] text-zinc-500 mt-0.5">ด้านหน้า: Custom ชื่อได้ตามลูกค้า • ด้านหลัง: สลัก KnuckKnuck (ฟิก)</div>
+              <div id="cust-preview-subcaption" class="text-[10px] text-zinc-500 mt-0.5">ด้านหน้า: Custom ชื่อได้ตามลูกค้า • ด้านหลัง: สลัก KnuckKnuck (ฟิก)</div>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div id="cust-zoom-controls" class="flex items-center gap-1.5">
               <button type="button" onclick="zoomCust3D(-0.7)" class="w-8 h-8 rounded-lg bg-matte-800 border border-matte-border hover:border-accent text-white"><i class="fa-solid fa-plus text-xs"></i></button>
               <button type="button" onclick="zoomCust3D(0.7)" class="w-8 h-8 rounded-lg bg-matte-800 border border-matte-border hover:border-accent text-white"><i class="fa-solid fa-minus text-xs"></i></button>
             </div>
@@ -402,7 +405,7 @@
           <p id="cust-desc" class="text-sm text-zinc-400"></p>
 
           <!-- 1. Case Shade -->
-          <div>
+          <div id="cust-shade-section">
             <div class="flex items-center justify-between mb-2">
               <label class="text-xs font-bold uppercase tracking-wider text-zinc-300">1. เลือกสีเคส (PICK YOUR SHADE)</label>
               <span id="cust-selected-color-label" class="text-xs font-semibold text-accent"></span>
@@ -411,7 +414,7 @@
           </div>
 
           <!-- 2. Lighter Option -->
-          <div>
+          <div id="cust-lighter-section">
             <label class="block text-xs font-bold uppercase tracking-wider text-zinc-300 mb-2">2. ตัวเลือกไฟแช็ค</label>
             <div class="grid grid-cols-2 gap-2.5">
               <button type="button" id="opt-case-only" onclick="selectLighterMode(false)" class="p-3 rounded-2xl border text-left transition">
@@ -432,7 +435,7 @@
           </div>
 
           <!-- 3. Custom Name (+30 THB) -->
-          <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border space-y-3">
+          <div id="cust-name-section" class="p-4 rounded-2xl bg-matte-950 border border-matte-border space-y-3">
             <label class="flex items-center justify-between gap-3 cursor-pointer">
               <div class="flex items-center gap-2.5">
                 <input id="cust-name-toggle" type="checkbox" onchange="toggleCustomName()" class="w-5 h-5 rounded accent-pink-400 cursor-pointer" />
@@ -723,55 +726,131 @@
 
           <!-- TAB 1: PRODUCTS -->
           <div id="admin-tab-products" class="space-y-6">
-            <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border">
-              <h4 id="prod-form-title" class="font-bold text-sm text-white mb-4">เพิ่มสินค้าใหม่</h4>
-              <form id="admin-product-form" onsubmit="saveAdminProduct(event)" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <div class="p-5 rounded-2xl bg-matte-950 border border-matte-border space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h4 id="prod-form-title" class="font-bold text-base text-white">เพิ่มสินค้าใหม่</h4>
+                  <p class="text-xs text-zinc-400">เลือกทรง 3D แล้วระบบจะสร้างภาพ 3D และหน้าหมุน 360° ให้อัตโนมัติทันที (หรือสลับเป็นโหมดรูปถ่ายจริงก็ได้)</p>
+                </div>
+                <button type="button" onclick="resetProductForm()" class="px-3.5 py-2 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-accent hover:border-accent">
+                  <i class="fa-solid fa-plus mr-1"></i>เริ่มเพิ่มรุ่นใหม่
+                </button>
+              </div>
+
+              <form id="admin-product-form" onsubmit="saveAdminProduct(event)" class="grid lg:grid-cols-12 gap-5">
                 <input id="pf-id" type="hidden" />
-                <div>
-                  <label class="block text-xs text-zinc-400 mb-1">ชื่อรุ่นสินค้า *</label>
-                  <input id="pf-name" type="text" required placeholder="เช่น KNUCK Classic" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs text-zinc-400 mb-1">ราคาเฉพาะเคส (บาท) *</label>
-                  <input id="pf-price" type="number" required min="1" value="149" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs text-zinc-400 mb-1">บวกเพิ่มพร้อมไฟแช็ค (บาท)</label>
-                  <input id="pf-lighter-addon" type="number" required min="0" value="10" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
-                </div>
-                <div>
-                  <label class="block text-xs text-zinc-400 mb-1">รูปทรง 3D</label>
-                  <select id="pf-style" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none">
-                    <option value="classic">Classic (รุ่นมาตรฐาน 4 รู)</option>
-                    <option value="winged">Winged / Horn (รุ่นแต่งเขี้ยว)</option>
-                    <option value="bedazzled">Bedazzled Era (รุ่นกลิตเตอร์ติดเพชร)</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs text-zinc-400 mb-1">สีพรีวิวเริ่มต้น</label>
-                  <select id="pf-default-color" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none"></select>
-                </div>
-                <div>
-                  <label class="block text-xs text-zinc-400 mb-1">แท็กป้ายกำกับ (ถ้ามี)</label>
-                  <input id="pf-badge" type="text" placeholder="เช่น BEST SELLER, NEW" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
-                </div>
-                <div class="sm:col-span-2 lg:col-span-3">
-                  <label class="block text-xs text-zinc-400 mb-1">คำอธิบายสินค้า</label>
-                  <input id="pf-desc" type="text" placeholder="รายละเอียดสั้นๆ ของรุ่นนี้" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
-                </div>
-                <div class="sm:col-span-2 lg:col-span-3 space-y-2">
-                  <label class="block text-xs text-zinc-400">รูปสินค้าจริง (เว้นว่างไว้เพื่อใช้ภาพเรนเดอร์ 3D อัตโนมัติ)</label>
-                  <div class="flex flex-col sm:flex-row gap-2">
-                    <input id="pf-image" type="text" placeholder="วาง URL รูปภาพ หรือกดอัปโหลดจากเครื่อง" class="flex-1 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
-                    <label class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent cursor-pointer flex items-center justify-center gap-2">
-                      <i class="fa-solid fa-upload text-accent"></i><span>อัปโหลดรูป</span>
-                      <input type="file" accept="image/*" onchange="handleProductImgUpload(event)" class="hidden" />
+
+                <!-- Live Auto-3D / Image Preview Column -->
+                <div class="lg:col-span-4 flex flex-col gap-3">
+                  <div class="rounded-2xl bg-gradient-to-b from-[#171724] to-[#0D0D14] border border-matte-border p-4 flex flex-col items-center justify-center min-h-[240px] relative">
+                    <span id="pf-preview-badge" class="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-accent-soft border border-accent/40 text-accent text-[10px] font-bold">3D อัตโนมัติ</span>
+                    <img id="pf-live-preview-img" src="" alt="Product Preview" class="w-44 h-44 object-contain" />
+                    <p class="text-[11px] text-zinc-400 mt-2 text-center">พรีวิวหน้าร้านอัปเดตอัตโนมัติตามทรงและสีที่เลือก</p>
+                  </div>
+
+                  <div class="p-3.5 rounded-2xl bg-matte-900 border border-matte-border space-y-2.5">
+                    <div class="text-xs font-bold text-white">ตัวเลือกการสั่งซื้อของรุ่นนี้</div>
+                    <label class="flex items-center justify-between gap-2 text-xs text-zinc-300 cursor-pointer">
+                      <span>เปิดให้เลือก "พร้อมไฟแช็ค"</span>
+                      <input id="pf-allow-lighter" type="checkbox" checked onchange="toggleAdminProductOptionInputs()" class="w-4 h-4 accent-pink-400" />
+                    </label>
+                    <label class="flex items-center justify-between gap-2 text-xs text-zinc-300 cursor-pointer">
+                      <span>เปิดให้ลูกค้า "Custom ชื่อด้านหน้า"</span>
+                      <input id="pf-allow-custom-name" type="checkbox" checked onchange="toggleAdminProductOptionInputs()" class="w-4 h-4 accent-pink-400" />
                     </label>
                   </div>
                 </div>
-                <div class="sm:col-span-2 lg:col-span-3 flex items-center gap-2 pt-1">
-                  <button type="submit" class="px-5 py-2.5 rounded-xl accent-gradient-bg text-[#09090D] font-extrabold text-xs sm:text-sm">บันทึกสินค้า</button>
-                  <button type="button" onclick="resetProductForm()" class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs text-zinc-300 hover:text-white">ล้างฟอร์ม</button>
+
+                <!-- Product Fields Column -->
+                <div class="lg:col-span-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5 content-start">
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">ชื่อรุ่นสินค้า *</label>
+                    <input id="pf-name" type="text" required placeholder="เช่น KNUCK Classic, KNUCK Devil, พวงกุญแจ" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">สถานะสินค้า</label>
+                    <select id="pf-status" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none">
+                      <option value="active">พร้อมขาย (แสดงหน้าร้าน)</option>
+                      <option value="soldout">สินค้าหมด (SOLD OUT)</option>
+                      <option value="hidden">ซ่อนจากหน้าร้าน</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ราคาเริ่มต้น / เฉพาะเคส (บาท) *</label>
+                    <input id="pf-price" type="number" required min="1" value="149" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div id="pf-lighter-addon-wrap">
+                    <label class="block text-xs text-zinc-400 mb-1">บวกเพิ่มพร้อมไฟแช็ค (บาท)</label>
+                    <input id="pf-lighter-addon" type="number" min="0" value="10" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div id="pf-custom-fee-wrap">
+                    <label class="block text-xs text-zinc-400 mb-1">ค่า Custom ชื่อ (เว้นว่าง = ค่าร้าน)</label>
+                    <input id="pf-custom-fee" type="number" min="0" placeholder="เช่น 30" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">โหมดแสดงผล</label>
+                    <select id="pf-display-mode" onchange="updateAdminProductPreview()" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none">
+                      <option value="3d">3D อัตโนมัติ (หมุนได้ 360°)</option>
+                      <option value="image">รูปถ่ายสินค้าจริง (ไม่ใช้ 3D)</option>
+                    </select>
+                  </div>
+                  <div id="pf-style-wrap">
+                    <label class="block text-xs text-zinc-400 mb-1">รูปทรง 3D อัตโนมัติ</label>
+                    <select id="pf-style" onchange="updateAdminProductPreview()" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none">
+                      <option value="classic">Classic (รุ่นมาตรฐาน 4 รู)</option>
+                      <option value="winged">Winged / Horn (รุ่นแต่งเขี้ยว)</option>
+                      <option value="bedazzled">Bedazzled Era (รุ่นกลิตเตอร์ติดเพชร)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">สีพรีวิวเริ่มต้น</label>
+                    <select id="pf-default-color" onchange="updateAdminProductPreview()" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none"></select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs text-zinc-400 mb-1">ป้ายแท็ก (Badge)</label>
+                    <input id="pf-badge" type="text" placeholder="เช่น BEST SELLER, NEW, LIMITED" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs text-zinc-400 mb-1">คำอธิบายสินค้า</label>
+                    <input id="pf-desc" type="text" placeholder="รายละเอียดจุดเด่นของรุ่นนี้" class="w-full px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                  </div>
+
+                  <div class="sm:col-span-2 lg:col-span-3 space-y-2">
+                    <label class="block text-xs text-zinc-400">รูปปกสินค้าจริง (ถ้าใช้ 3D อัตโนมัติ เว้นว่างไว้ได้เลย / ถ้าอยากโชว์รูปถ่ายจริงให้อัปโหลดที่นี่)</label>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                      <input id="pf-image" type="text" oninput="updateAdminProductPreview()" placeholder="วาง URL รูปภาพ หรือกดอัปโหลดจากเครื่อง" class="flex-1 px-3.5 py-2.5 rounded-xl bg-matte-900 border border-matte-border text-sm text-white focus:border-accent focus:outline-none" />
+                      <label class="px-4 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-white hover:border-accent cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-upload text-accent"></i><span>อัปโหลดรูป</span>
+                        <input type="file" accept="image/*" onchange="handleProductImgUpload(event)" class="hidden" />
+                      </label>
+                      <button type="button" onclick="document.getElementById('pf-image').value='';updateAdminProductPreview();" class="px-3 py-2.5 rounded-xl bg-matte-800 border border-matte-border text-xs text-zinc-400 hover:text-white">ล้างรูป</button>
+                    </div>
+                  </div>
+
+                  <!-- Per-Product Shades Picker + Custom Shade Creator -->
+                  <div class="sm:col-span-2 lg:col-span-3 p-3.5 rounded-2xl bg-matte-900 border border-matte-border space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <label class="text-xs font-bold text-white">เฉดสีที่เปิดขายสำหรับรุ่นนี้ (ติ๊กเลือกได้อิสระ)</label>
+                      <div class="flex gap-1.5">
+                        <button type="button" onclick="toggleAllProductShades(true)" class="px-2 py-1 rounded-lg bg-matte-800 text-[10px] text-accent font-bold">เลือกทั้งหมด</button>
+                        <button type="button" onclick="toggleAllProductShades(false)" class="px-2 py-1 rounded-lg bg-matte-800 text-[10px] text-zinc-400">ล้างเลือก</button>
+                      </div>
+                    </div>
+                    <div id="pf-shades-picker" class="flex flex-wrap gap-1.5"></div>
+                    <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-matte-border">
+                      <input id="pf-new-shade-hex" type="color" value="#FF6B9E" class="w-9 h-9 rounded-lg bg-transparent border border-matte-border cursor-pointer" />
+                      <input id="pf-new-shade-name" type="text" placeholder="เพิ่มสีพิเศษใหม่ เช่น Neon Pink, Clear" class="flex-1 min-w-[160px] px-3 py-2 rounded-xl bg-matte-950 border border-matte-border text-xs text-white focus:border-accent focus:outline-none" />
+                      <button type="button" onclick="addCustomShadeToDraft()" class="px-3.5 py-2 rounded-xl bg-matte-800 border border-matte-border text-xs font-bold text-accent hover:border-accent">+ เพิ่มสี</button>
+                    </div>
+                  </div>
+
+                  <div class="sm:col-span-2 lg:col-span-3 flex flex-wrap items-center gap-2 pt-1">
+                    <button type="submit" class="px-6 py-3 rounded-xl accent-gradient-bg text-[#09090D] font-extrabold text-xs sm:text-sm shadow-lg">บันทึกสินค้าขึ้นหน้าร้าน</button>
+                    <button type="button" onclick="resetProductForm()" class="px-4 py-3 rounded-xl bg-matte-800 border border-matte-border text-xs text-zinc-300 hover:text-white">ล้างฟอร์ม</button>
+                  </div>
                 </div>
               </form>
             </div>
@@ -1130,6 +1209,8 @@
     let orders = [];
     let cart = [];
     let draftGallery = [];
+    let firestoreProductsEmpty = true;
+    let draftProductShades = CASE_SHADES.map(s => ({ ...s, enabled: true }));
     let activeAdminTab = 'products';
     let lastOrderId = '';
     let checkoutSlipData = '';
@@ -1968,34 +2049,49 @@
       document.getElementById('co-bank-name').textContent = siteConfig.bankName || '';
       document.getElementById('co-account-name').textContent = siteConfig.accountName || '';
       document.getElementById('co-account-number').textContent = siteConfig.accountNumber || '';
-      const qrImg = document.getElementById('co-qr-img');
-      if (siteConfig.qrCodeUrl) {
-        qrImg.src = siteConfig.qrCodeUrl;
-        qrImg.classList.remove('hidden');
-      } else {
-        qrImg.classList.add('hidden');
-      }
 
-      document.getElementById('cust-name-fee-badge').textContent = `+฿${Number(siteConfig.customNameFee || 30)}`;
+      const qrImg = document.getElementById('co-qr-img');
+      if (qrImg) {
+        if (siteConfig.qrCodeUrl) {
+          qrImg.src = siteConfig.qrCodeUrl;
+          qrImg.classList.remove('hidden');
+        } else {
+          qrImg.classList.add('hidden');
+        }
+      }
 
       renderGallery();
       renderCart();
+    }
+
+    function getProductShades(p) {
+      if (p && Array.isArray(p.shades) && p.shades.length > 0) {
+        return p.shades;
+      }
+      return CASE_SHADES;
     }
 
     function renderProductsGrid() {
       const grid = document.getElementById('products-grid');
       if (!grid) return;
 
-      grid.innerHTML = products.map((p) => {
-        const chosenHex = cardSelectedColor[p.id] || p.defaultColor || '#F4A6B8';
+      const visibleProducts = products.filter(p => (p.status || 'active') !== 'hidden');
+
+      grid.innerHTML = visibleProducts.map((p) => {
+        const shades = getProductShades(p);
+        const chosenHex = cardSelectedColor[p.id] || p.defaultColor || shades[0]?.hex || '#F4A6B8';
+        const isImageMode = p.displayMode === 'image';
         const imgSrc = p.image || renderProductCard3DImage(p.style || 'classic', chosenHex);
+        const allowLighter = p.allowLighter !== false;
         const withLighterPrice = Number(p.basePrice) + Number(p.lighterAddon ?? 10);
+        const isSoldOut = p.status === 'soldout';
 
         return `
-          <div class="matte-card rounded-3xl overflow-hidden flex flex-col group hover:border-accent/60 transition duration-300 shadow-xl">
-            <div onclick="openCustomizer('${p.id}')" class="relative h-64 sm:h-72 bg-gradient-to-b from-[#171724] to-[#0D0D14] flex items-center justify-center p-4 cursor-pointer overflow-hidden">
+          <div class="matte-card rounded-3xl overflow-hidden flex flex-col group hover:border-accent/60 transition duration-300 shadow-xl ${isSoldOut ? 'opacity-75' : ''}">
+            <div onclick="${isSoldOut ? '' : `openCustomizer('${p.id}')`}" class="relative h-64 sm:h-72 bg-gradient-to-b from-[#171724] to-[#0D0D14] flex items-center justify-center p-4 ${isSoldOut ? 'cursor-not-allowed' : 'cursor-pointer'} overflow-hidden">
               ${p.badge ? `<span class="absolute top-3.5 left-3.5 z-10 px-2.5 py-1 rounded-lg bg-matte-950/90 border border-accent/40 text-accent text-[10px] font-extrabold tracking-wider uppercase">${escapeHtml(p.badge)}</span>` : ''}
-              <span class="absolute top-3.5 right-3.5 z-10 px-2.5 py-1 rounded-lg bg-matte-950/80 border border-matte-border text-zinc-300 text-[10px] font-bold"><i class="fa-solid fa-cube text-accent mr-1"></i>3D VIEW</span>
+              ${!isImageMode ? `<span class="absolute top-3.5 right-3.5 z-10 px-2.5 py-1 rounded-lg bg-matte-950/80 border border-matte-border text-zinc-300 text-[10px] font-bold"><i class="fa-solid fa-cube text-accent mr-1"></i>3D VIEW</span>` : ''}
+              ${isSoldOut ? `<div class="absolute inset-0 z-20 bg-black/55 backdrop-blur-[1px] flex items-center justify-center"><span class="px-4 py-1.5 rounded-full bg-red-500/90 text-white font-extrabold text-xs tracking-widest uppercase shadow-lg">SOLD OUT</span></div>` : ''}
               <img id="card-img-${p.id}" src="${imgSrc}" alt="${escapeHtml(p.name)}" class="w-full h-full object-contain group-hover:scale-105 transition duration-500" />
             </div>
 
@@ -2005,24 +2101,24 @@
                   <h3 class="font-display font-bold text-lg text-white leading-snug">${escapeHtml(p.name)}</h3>
                   <div class="text-right flex-shrink-0">
                     <div class="font-display font-bold text-xl text-accent leading-none">฿${p.basePrice}</div>
-                    <div class="text-[11px] text-zinc-400 mt-1">พร้อมไฟแช็ค ฿${withLighterPrice}</div>
+                    ${allowLighter ? `<div class="text-[11px] text-zinc-400 mt-1">พร้อมไฟแช็ค ฿${withLighterPrice}</div>` : ''}
                   </div>
                 </div>
                 <p class="text-xs text-zinc-400 mt-2 line-clamp-2">${escapeHtml(p.description || '')}</p>
 
                 <!-- Quick Color Swatches -->
                 <div class="flex items-center gap-1.5 mt-3.5 flex-wrap">
-                  ${CASE_SHADES.slice(0, 7).map((s) => `
-                    <button type="button" title="${s.name}" onclick="switchCardColor('${p.id}', '${s.hex}')"
+                  ${shades.slice(0, 7).map((s) => `
+                    <button type="button" title="${escapeHtml(s.name)}" onclick="switchCardColor('${p.id}', '${s.hex}')"
                       class="w-5 h-5 rounded-full border-2 ${chosenHex === s.hex ? 'border-accent scale-110' : 'border-white/20'} transition"
                       style="background:${s.hex}"></button>
                   `).join('')}
-                  <span class="text-[10px] text-zinc-500 ml-1">+3 สี</span>
+                  ${shades.length > 7 ? `<span class="text-[10px] text-zinc-500 ml-1">+${shades.length - 7} สี</span>` : ''}
                 </div>
               </div>
 
-              <button type="button" onclick="openCustomizer('${p.id}')" class="w-full py-3 rounded-2xl accent-gradient-bg text-[#09090D] font-extrabold text-sm hover:opacity-95 transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-sliders"></i><span>ปรับแต่ง 3D &amp; สั่งซื้อ</span>
+              <button type="button" ${isSoldOut ? 'disabled' : `onclick="openCustomizer('${p.id}')"`} class="w-full py-3 rounded-2xl ${isSoldOut ? 'bg-matte-800 text-zinc-500 cursor-not-allowed' : 'accent-gradient-bg text-[#09090D] hover:opacity-95'} font-extrabold text-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid ${isSoldOut ? 'fa-ban' : 'fa-sliders'}"></i><span>${isSoldOut ? 'สินค้าหมดชั่วคราว' : (isImageMode ? 'เลือกสี & สั่งซื้อ' : 'ปรับแต่ง 3D & สั่งซื้อ')}</span>
               </button>
             </div>
           </div>
@@ -2092,31 +2188,26 @@
 
     // ==================== PRODUCT CUSTOMIZER ====================
     window.openCustomizer = function(prodId) {
-      const p = products.find(x => x.id === prodId) || products[0];
+      const visibleProducts = products.filter(x => (x.status || 'active') === 'active');
+      const p = products.find(x => x.id === prodId) || visibleProducts[0] || products[0];
       if (!p) return;
-      const startHex = cardSelectedColor[p.id] || p.defaultColor || '#1B1B22';
-      const shadeObj = CASE_SHADES.find(s => s.hex.toLowerCase() === startHex.toLowerCase()) || CASE_SHADES[0];
+      const shades = getProductShades(p);
+      const startHex = cardSelectedColor[p.id] || p.defaultColor || shades[0]?.hex || '#1B1B22';
+      const shadeObj = shades.find(s => s.hex.toLowerCase() === startHex.toLowerCase()) || shades[0] || CASE_SHADES[0];
+      const allowLighter = p.allowLighter !== false;
 
       custState = {
         product: p,
         caseColorHex: shadeObj.hex,
         caseColorName: shadeObj.name,
-        withLighter: true,
+        withLighter: allowLighter,
         lighterColor: LIGHTER_COLORS[0],
         customNameEnabled: false,
         customName: '',
         qty: 1
       };
 
-      document.getElementById('cust-title').textContent = p.name;
-      document.getElementById('cust-desc').textContent = p.description || '';
-      document.getElementById('opt-case-only-price').textContent = `฿${p.basePrice}`;
-      document.getElementById('opt-with-lighter-price').textContent = `฿${Number(p.basePrice) + Number(p.lighterAddon ?? 10)} (+฿${p.lighterAddon ?? 10})`;
-      document.getElementById('cust-name-toggle').checked = false;
-      document.getElementById('cust-name-input').value = '';
-      document.getElementById('cust-name-input-wrap').classList.add('hidden');
-      document.getElementById('cust-qty').textContent = '1';
-
+      applyProductMetaToCustomizer(p);
       renderCustProductSwitcher();
       renderCustomizerControls();
 
@@ -2124,15 +2215,64 @@
       modal.classList.remove('hidden');
       modal.classList.add('flex');
 
-      setTimeout(() => {
-        const canvasWrap = document.getElementById('cust-3d-canvas');
+      setTimeout(() => syncCustVisualStage(p), 40);
+    };
+
+    function applyProductMetaToCustomizer(p) {
+      const allowLighter = p.allowLighter !== false;
+      const allowCustomName = p.allowCustomName !== false;
+      const customFee = p.customNameFee !== undefined && p.customNameFee !== '' && p.customNameFee !== null
+        ? Number(p.customNameFee)
+        : Number(siteConfig.customNameFee ?? 30);
+
+      document.getElementById('cust-title').textContent = p.name;
+      document.getElementById('cust-desc').textContent = p.description || '';
+      document.getElementById('opt-case-only-price').textContent = `฿${p.basePrice}`;
+      document.getElementById('opt-with-lighter-price').textContent = `฿${Number(p.basePrice) + Number(p.lighterAddon ?? 10)} (+฿${p.lighterAddon ?? 10})`;
+      document.getElementById('cust-name-fee-badge').textContent = `+฿${customFee}`;
+
+      document.getElementById('cust-lighter-section').classList.toggle('hidden', !allowLighter);
+      document.getElementById('cust-name-section').classList.toggle('hidden', !allowCustomName);
+
+      document.getElementById('cust-name-toggle').checked = false;
+      document.getElementById('cust-name-input').value = '';
+      document.getElementById('cust-name-input-wrap').classList.add('hidden');
+      document.getElementById('cust-qty').textContent = String(custState.qty || 1);
+    }
+
+    function syncCustVisualStage(p) {
+      const isImageMode = p.displayMode === 'image';
+      const canvasWrap = document.getElementById('cust-3d-canvas');
+      const staticWrap = document.getElementById('cust-static-image-wrap');
+      const staticImg = document.getElementById('cust-static-image');
+      const toolbar = document.getElementById('cust-3d-toolbar');
+      const zoomCtrl = document.getElementById('cust-zoom-controls');
+      const subCap = document.getElementById('cust-preview-subcaption');
+
+      if (isImageMode) {
+        if (custViewer) custViewer.stop();
+        canvasWrap.classList.add('hidden');
+        toolbar.classList.add('hidden');
+        zoomCtrl.classList.add('hidden');
+        staticWrap.classList.remove('hidden');
+        staticWrap.classList.add('flex');
+        staticImg.src = p.image || renderProductCard3DImage(p.style || 'classic', custState.caseColorHex);
+        subCap.textContent = 'โหมดภาพถ่ายสินค้าจริง';
+      } else {
+        staticWrap.classList.add('hidden');
+        staticWrap.classList.remove('flex');
+        canvasWrap.classList.remove('hidden');
+        toolbar.classList.remove('hidden');
+        zoomCtrl.classList.remove('hidden');
+        subCap.textContent = 'ด้านหน้า: Custom ชื่อได้ตามลูกค้า • ด้านหลัง: สลัก KnuckKnuck (ฟิก)';
+
         if (!custViewer) {
           custViewer = new Knuck3DViewer(canvasWrap, {
             caseHex: custState.caseColorHex,
             style: p.style || 'classic',
             withLighter: custState.withLighter,
             lighterHex: custState.lighterColor.hex,
-            customName: ''
+            customName: custState.customNameEnabled ? (custState.customName || 'YOUR NAME') : ''
           });
         } else {
           custViewer.updateOptions({
@@ -2140,14 +2280,14 @@
             style: p.style || 'classic',
             withLighter: custState.withLighter,
             lighterHex: custState.lighterColor.hex,
-            customName: ''
+            customName: custState.customNameEnabled ? (custState.customName || 'YOUR NAME') : ''
           });
           custViewer.setView('front');
           custViewer.handleResize();
           custViewer.start();
         }
-      }, 40);
-    };
+      }
+    }
 
     window.closeCustomizer = function() {
       const modal = document.getElementById('customizer-modal');
@@ -2162,7 +2302,8 @@
     function renderCustProductSwitcher() {
       const wrap = document.getElementById('cust-product-switcher');
       if (!wrap || !custState.product) return;
-      wrap.innerHTML = products.map((p) => {
+      const activeProducts = products.filter(p => (p.status || 'active') === 'active');
+      wrap.innerHTML = activeProducts.map((p) => {
         const active = custState.product.id === p.id;
         return `
           <button type="button" onclick="switchCustProduct('${p.id}')"
@@ -2177,33 +2318,35 @@
     window.switchCustProduct = function(prodId) {
       const p = products.find(x => x.id === prodId);
       if (!p) return;
+      const shades = getProductShades(p);
+      const keepShade = shades.find(s => s.hex.toLowerCase() === custState.caseColorHex.toLowerCase()) || shades[0] || CASE_SHADES[0];
       custState.product = p;
-      document.getElementById('cust-title').textContent = p.name;
-      document.getElementById('cust-desc').textContent = p.description || '';
-      document.getElementById('opt-case-only-price').textContent = `฿${p.basePrice}`;
-      document.getElementById('opt-with-lighter-price').textContent = `฿${Number(p.basePrice) + Number(p.lighterAddon ?? 10)} (+฿${p.lighterAddon ?? 10})`;
-      if (custViewer) {
-        custViewer.updateOptions({
-          style: p.style || 'classic',
-          caseHex: custState.caseColorHex,
-          withLighter: custState.withLighter,
-          lighterHex: custState.lighterColor.hex,
-          customName: custState.customNameEnabled ? (custState.customName || 'YOUR NAME') : ''
-        });
+      custState.caseColorHex = keepShade.hex;
+      custState.caseColorName = keepShade.name;
+      custState.withLighter = p.allowLighter !== false ? custState.withLighter : false;
+      if (p.allowCustomName === false) {
+        custState.customNameEnabled = false;
+        custState.customName = '';
       }
+      applyProductMetaToCustomizer(p);
+      syncCustVisualStage(p);
       renderCustProductSwitcher();
       renderCustomizerControls();
     };
 
     function renderCustomizerControls() {
-      document.getElementById('cust-selected-color-label').textContent = custState.caseColorName;
-      document.getElementById('cust-preview-caption').textContent = `สีเคส: ${custState.caseColorName}${custState.withLighter ? ' • ไฟแช็คสี' + custState.lighterColor.name : ' • เฉพาะเคส'}`;
+      const p = custState.product;
+      const shades = getProductShades(p);
+      const allowLighter = p?.allowLighter !== false;
 
-      document.getElementById('cust-color-options').innerHTML = CASE_SHADES.map((s) => `
-        <button type="button" onclick="selectCustCaseColor('${s.hex}', '${s.name}')"
-          class="p-2 rounded-xl border ${custState.caseColorHex === s.hex ? 'border-accent bg-accent-soft' : 'border-matte-border bg-matte-950'} flex flex-col items-center gap-1 transition">
+      document.getElementById('cust-selected-color-label').textContent = custState.caseColorName;
+      document.getElementById('cust-preview-caption').textContent = `สี: ${custState.caseColorName}${allowLighter ? (custState.withLighter ? ' • ไฟแช็คสี' + custState.lighterColor.name : ' • เฉพาะเคส') : ''}`;
+
+      document.getElementById('cust-color-options').innerHTML = shades.map((s) => `
+        <button type="button" onclick="selectCustCaseColor('${s.hex}', '${escapeHtml(s.name)}')"
+          class="p-2 rounded-xl border ${custState.caseColorHex.toLowerCase() === s.hex.toLowerCase() ? 'border-accent bg-accent-soft' : 'border-matte-border bg-matte-950'} flex flex-col items-center gap-1 transition">
           <span class="w-6 h-6 rounded-full border border-white/25" style="background:${s.hex}"></span>
-          <span class="text-[10px] text-zinc-300 truncate w-full text-center">${s.name.split(' ')[0]}</span>
+          <span class="text-[10px] text-zinc-300 truncate w-full text-center">${escapeHtml(s.name.split(' ')[0])}</span>
         </button>
       `).join('');
 
@@ -2213,7 +2356,7 @@
       btnWith.className = `p-3 rounded-2xl border text-left transition ${custState.withLighter ? 'border-accent bg-accent-soft' : 'border-matte-border bg-matte-950'}`;
 
       const picker = document.getElementById('lighter-color-picker');
-      picker.classList.toggle('hidden', !custState.withLighter);
+      picker.classList.toggle('hidden', !allowLighter || !custState.withLighter);
       document.getElementById('cust-lighter-color-label').textContent = custState.lighterColor.name;
 
       document.getElementById('cust-lighter-colors').innerHTML = LIGHTER_COLORS.map((lc) => `
@@ -2272,8 +2415,13 @@
     function getCustUnitPrice() {
       if (!custState.product) return 0;
       const base = Number(custState.product.basePrice) || 149;
-      const lighterFee = custState.withLighter ? Number(custState.product.lighterAddon ?? 10) : 0;
-      const nameFee = custState.customNameEnabled ? Number(siteConfig.customNameFee ?? 30) : 0;
+      const allowLighter = custState.product.allowLighter !== false;
+      const allowCustomName = custState.product.allowCustomName !== false;
+      const lighterFee = (allowLighter && custState.withLighter) ? Number(custState.product.lighterAddon ?? 10) : 0;
+      const perProdCustomFee = custState.product.customNameFee !== undefined && custState.product.customNameFee !== '' && custState.product.customNameFee !== null
+        ? Number(custState.product.customNameFee)
+        : Number(siteConfig.customNameFee ?? 30);
+      const nameFee = (allowCustomName && custState.customNameEnabled) ? perProdCustomFee : 0;
       return base + lighterFee + nameFee;
     }
 
@@ -2816,8 +2964,80 @@
     function populateProductColorSelect() {
       const sel = document.getElementById('pf-default-color');
       if (!sel) return;
-      sel.innerHTML = CASE_SHADES.map(s => `<option value="${s.hex}">${s.name}</option>`).join('');
+      const prev = sel.value;
+      const enabledShades = draftProductShades.filter(s => s.enabled);
+      const list = enabledShades.length ? enabledShades : CASE_SHADES;
+      sel.innerHTML = list.map(s => `<option value="${s.hex}">${escapeHtml(s.name)}</option>`).join('');
+      if (prev && list.some(s => s.hex.toLowerCase() === prev.toLowerCase())) {
+        sel.value = prev;
+      }
     }
+
+    function renderAdminShadePicker() {
+      const wrap = document.getElementById('pf-shades-picker');
+      if (!wrap) return;
+      wrap.innerHTML = draftProductShades.map((s, idx) => `
+        <button type="button" onclick="toggleDraftProductShade(${idx})"
+          class="px-2.5 py-1.5 rounded-xl border text-[11px] font-semibold flex items-center gap-1.5 transition ${s.enabled ? 'border-accent bg-accent-soft text-white' : 'border-matte-border bg-matte-950 text-zinc-500 opacity-60'}">
+          <span class="w-3.5 h-3.5 rounded-full border border-white/25" style="background:${s.hex}"></span>
+          <span>${escapeHtml(s.name)}</span>
+          ${s.enabled ? '<i class="fa-solid fa-check text-[9px] text-accent"></i>' : ''}
+        </button>
+      `).join('');
+      populateProductColorSelect();
+      updateAdminProductPreview();
+    }
+
+    window.toggleDraftProductShade = function(idx) {
+      if (!draftProductShades[idx]) return;
+      draftProductShades[idx].enabled = !draftProductShades[idx].enabled;
+      renderAdminShadePicker();
+    };
+
+    window.toggleAllProductShades = function(flag) {
+      draftProductShades.forEach(s => { s.enabled = flag; });
+      renderAdminShadePicker();
+    };
+
+    window.addCustomShadeToDraft = function() {
+      const nameEl = document.getElementById('pf-new-shade-name');
+      const hexEl = document.getElementById('pf-new-shade-hex');
+      const name = nameEl.value.trim();
+      const hex = hexEl.value;
+      if (!name) {
+        showToast('กรุณาตั้งชื่อสีพิเศษก่อนกดเพิ่ม', 'error');
+        return;
+      }
+      draftProductShades.push({ id: 'custom_' + Date.now(), name, hex, enabled: true });
+      nameEl.value = '';
+      renderAdminShadePicker();
+      document.getElementById('pf-default-color').value = hex;
+      updateAdminProductPreview();
+      showToast(`เพิ่มสี "${name}" แล้ว`);
+    };
+
+    window.toggleAdminProductOptionInputs = function() {
+      const allowLighter = document.getElementById('pf-allow-lighter')?.checked;
+      const allowName = document.getElementById('pf-allow-custom-name')?.checked;
+      document.getElementById('pf-lighter-addon-wrap')?.classList.toggle('opacity-40', !allowLighter);
+      document.getElementById('pf-custom-fee-wrap')?.classList.toggle('opacity-40', !allowName);
+    };
+
+    window.updateAdminProductPreview = function() {
+      const mode = document.getElementById('pf-display-mode')?.value || '3d';
+      const style = document.getElementById('pf-style')?.value || 'classic';
+      const color = document.getElementById('pf-default-color')?.value || '#F4A6B8';
+      const imgUrl = document.getElementById('pf-image')?.value.trim() || '';
+      const previewImg = document.getElementById('pf-live-preview-img');
+      const badge = document.getElementById('pf-preview-badge');
+      const styleWrap = document.getElementById('pf-style-wrap');
+
+      if (styleWrap) styleWrap.classList.toggle('opacity-40', mode === 'image');
+      if (badge) badge.textContent = mode === 'image' ? 'โหมดรูปถ่ายจริง' : '3D อัตโนมัติ (หมุนได้ 360°)';
+      if (previewImg) {
+        previewImg.src = imgUrl || renderProductCard3DImage(style, color);
+      }
+    };
 
     window.handleProductImgUpload = async function(event) {
       const file = event.target.files?.[0];
@@ -2825,6 +3045,7 @@
       try {
         const dataUrl = await compressImageFile(file, 800, 0.8);
         document.getElementById('pf-image').value = dataUrl;
+        updateAdminProductPreview();
         showToast('อัปโหลดรูปสินค้าแล้ว');
       } catch (e) {
         showToast('อัปโหลดรูปไม่สำเร็จ', 'error');
@@ -2836,12 +3057,22 @@
       if (!isVerifiedOwner()) return;
 
       const editId = document.getElementById('pf-id').value.trim();
+      const enabledShades = draftProductShades.filter(s => s.enabled).map(({ id, name, hex }) => ({ id, name, hex }));
+      const finalShades = enabledShades.length ? enabledShades : CASE_SHADES;
+      const customFeeRaw = document.getElementById('pf-custom-fee').value.trim();
+
       const prodObj = {
         name: document.getElementById('pf-name').value.trim(),
+        status: document.getElementById('pf-status').value || 'active',
         basePrice: Number(document.getElementById('pf-price').value) || 149,
-        lighterAddon: Number(document.getElementById('pf-lighter-addon').value) || 10,
-        style: document.getElementById('pf-style').value,
-        defaultColor: document.getElementById('pf-default-color').value,
+        allowLighter: document.getElementById('pf-allow-lighter').checked,
+        lighterAddon: Number(document.getElementById('pf-lighter-addon').value) || 0,
+        allowCustomName: document.getElementById('pf-allow-custom-name').checked,
+        customNameFee: customFeeRaw === '' ? '' : Number(customFeeRaw),
+        displayMode: document.getElementById('pf-display-mode').value || '3d',
+        style: document.getElementById('pf-style').value || 'classic',
+        defaultColor: document.getElementById('pf-default-color').value || finalShades[0].hex,
+        shades: finalShades,
         badge: document.getElementById('pf-badge').value.trim(),
         description: document.getElementById('pf-desc').value.trim(),
         image: document.getElementById('pf-image').value.trim(),
@@ -2850,6 +3081,15 @@
 
       try {
         if (db) {
+          // If Firestore products collection was empty, preserve default products so they don't vanish
+          if (firestoreProductsEmpty) {
+            for (const dp of DEFAULT_PRODUCTS) {
+              if (dp.id !== editId) {
+                const { id: dpId, ...dpData } = dp;
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', dpId), dpData);
+              }
+            }
+          }
           const docId = editId || ('prod_' + Date.now());
           await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', docId), prodObj);
         } else {
@@ -2864,8 +3104,9 @@
           renderAdminProducts();
         }
         resetProductForm();
-        showToast('บันทึกสินค้าเรียบร้อย!');
+        showToast('บันทึกสินค้าขึ้นหน้าร้านเรียบร้อย!');
       } catch (e) {
+        console.error(e);
         showToast('บันทึกสินค้าไม่สำเร็จ', 'error');
       }
     };
@@ -2876,21 +3117,60 @@
       document.getElementById('prod-form-title').textContent = `แก้ไขสินค้า: ${p.name}`;
       document.getElementById('pf-id').value = p.id;
       document.getElementById('pf-name').value = p.name;
+      document.getElementById('pf-status').value = p.status || 'active';
       document.getElementById('pf-price').value = p.basePrice;
+      document.getElementById('pf-allow-lighter').checked = p.allowLighter !== false;
       document.getElementById('pf-lighter-addon').value = p.lighterAddon ?? 10;
+      document.getElementById('pf-allow-custom-name').checked = p.allowCustomName !== false;
+      document.getElementById('pf-custom-fee').value = p.customNameFee !== undefined && p.customNameFee !== null ? p.customNameFee : '';
+      document.getElementById('pf-display-mode').value = p.displayMode || '3d';
       document.getElementById('pf-style').value = p.style || 'classic';
-      document.getElementById('pf-default-color').value = p.defaultColor || '#F4A6B8';
       document.getElementById('pf-badge').value = p.badge || '';
       document.getElementById('pf-desc').value = p.description || '';
       document.getElementById('pf-image').value = p.image || '';
+
+      const prodShades = getProductShades(p);
+      const baseList = CASE_SHADES.map(s => ({
+        ...s,
+        enabled: prodShades.some(ps => ps.hex.toLowerCase() === s.hex.toLowerCase())
+      }));
+      prodShades.forEach(ps => {
+        if (!baseList.some(b => b.hex.toLowerCase() === ps.hex.toLowerCase())) {
+          baseList.push({ ...ps, enabled: true });
+        }
+      });
+      draftProductShades = baseList;
+      renderAdminShadePicker();
+      document.getElementById('pf-default-color').value = p.defaultColor || prodShades[0]?.hex || '#F4A6B8';
+      toggleAdminProductOptionInputs();
+      updateAdminProductPreview();
+      document.getElementById('admin-tab-products')?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.duplicateAdminProduct = function(id) {
+      editAdminProduct(id);
+      document.getElementById('pf-id').value = '';
+      document.getElementById('pf-name').value = document.getElementById('pf-name').value + ' (Copy)';
+      document.getElementById('prod-form-title').textContent = 'สร้างสินค้าใหม่จากต้นแบบ';
+      showToast('คัดลอกข้อมูลเข้าฟอร์มแล้ว แก้ไขแล้วกดบันทึกได้เลย');
     };
 
     window.resetProductForm = function() {
       document.getElementById('prod-form-title').textContent = 'เพิ่มสินค้าใหม่';
       document.getElementById('admin-product-form').reset();
       document.getElementById('pf-id').value = '';
+      document.getElementById('pf-status').value = 'active';
       document.getElementById('pf-price').value = '149';
+      document.getElementById('pf-allow-lighter').checked = true;
       document.getElementById('pf-lighter-addon').value = '10';
+      document.getElementById('pf-allow-custom-name').checked = true;
+      document.getElementById('pf-custom-fee').value = '';
+      document.getElementById('pf-display-mode').value = '3d';
+      document.getElementById('pf-style').value = 'classic';
+      draftProductShades = CASE_SHADES.map(s => ({ ...s, enabled: true }));
+      renderAdminShadePicker();
+      toggleAdminProductOptionInputs();
+      updateAdminProductPreview();
     };
 
     window.deleteAdminProduct = function(id) {
@@ -2914,18 +3194,27 @@
     function renderAdminProducts() {
       const list = document.getElementById('admin-products-list');
       if (!list) return;
+      const statusBadge = {
+        active: '<span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[10px] font-bold">พร้อมขาย</span>',
+        soldout: '<span class="px-1.5 py-0.5 rounded bg-red-500/15 text-red-300 text-[10px] font-bold">SOLD OUT</span>',
+        hidden: '<span class="px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-300 text-[10px] font-bold">ซ่อนอยู่</span>'
+      };
       list.innerHTML = products.map((p) => `
         <div class="p-4 rounded-2xl bg-matte-950 border border-matte-border flex flex-col justify-between gap-3">
           <div class="flex items-start gap-3">
             <img src="${p.image || renderProductCard3DImage(p.style || 'classic', p.defaultColor || '#F4A6B8')}" class="w-16 h-16 rounded-xl object-contain bg-matte-900 border border-matte-border p-1" />
             <div class="min-w-0 flex-1">
-              <div class="font-bold text-sm text-white truncate">${escapeHtml(p.name)}</div>
-              <div class="text-xs text-accent font-bold mt-0.5">฿${p.basePrice} (พร้อมไฟแช็ค +฿${p.lighterAddon ?? 10})</div>
-              <div class="text-[11px] text-zinc-500 mt-0.5">ทรง 3D: ${escapeHtml(p.style || 'classic')}</div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <div class="font-bold text-sm text-white truncate">${escapeHtml(p.name)}</div>
+                ${statusBadge[p.status || 'active'] || statusBadge.active}
+              </div>
+              <div class="text-xs text-accent font-bold mt-0.5">฿${p.basePrice}${p.allowLighter !== false ? ` (พร้อมไฟแช็ค +฿${p.lighterAddon ?? 10})` : ''}</div>
+              <div class="text-[11px] text-zinc-500 mt-0.5">${p.displayMode === 'image' ? 'รูปถ่ายจริง' : '3D อัตโนมัติ: ' + escapeHtml(p.style || 'classic')} • ${getProductShades(p).length} สี</div>
             </div>
           </div>
-          <div class="flex gap-2">
+          <div class="flex gap-1.5">
             <button type="button" onclick="editAdminProduct('${p.id}')" class="flex-1 py-2 rounded-xl bg-matte-800 text-xs font-bold text-zinc-200 hover:text-accent">แก้ไข</button>
+            <button type="button" onclick="duplicateAdminProduct('${p.id}')" title="คัดลอกเป็นรุ่นใหม่" class="px-3 py-2 rounded-xl bg-matte-800 text-xs font-bold text-zinc-300 hover:text-white"><i class="fa-regular fa-copy"></i></button>
             <button type="button" onclick="deleteAdminProduct('${p.id}')" class="px-3 py-2 rounded-xl bg-red-500/15 text-xs font-bold text-red-300 hover:bg-red-500 hover:text-white">ลบ</button>
           </div>
         </div>
@@ -3334,6 +3623,7 @@
 
         // Listen to Products
         onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), (snap) => {
+          firestoreProductsEmpty = snap.empty;
           if (snap.empty) {
             products = [...DEFAULT_PRODUCTS];
           } else {
@@ -3359,7 +3649,7 @@
     }
 
     function bootApp() {
-      populateProductColorSelect();
+      renderAdminShadePicker();
       renderShadesShowcase();
       loadLocalState();
       applySiteConfigToUI();
